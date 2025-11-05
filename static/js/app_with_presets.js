@@ -967,27 +967,25 @@ function showResult(data) {
 
         // Prepare chart data for visualizations
         chartDataHtml = `
-            <div class="mt-4">
-                <h6><i class="bi bi-graph-up-arrow"></i> Interactive Data Visualizations</h6>
+            <div class="mt-4" id="visualizationSection">
+                <h6><i class="bi bi-graph-up-arrow"></i> Professional Time-Series Visualizations</h6>
+                <p class="text-muted small mb-3">Real-time trend analysis with timestamps, metric names, and entity information</p>
                 <div class="row g-3 mt-2">
                     <div class="col-md-6">
                         <div class="glass-card p-3">
-                            <h6 class="text-center mb-3">Metric Distributions (Mean Values)</h6>
-                            <canvas id="metricsBarChart" style="max-height: 300px;"></canvas>
+                            <canvas id="metricsBarChart" style="max-height: 350px;"></canvas>
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="glass-card p-3">
-                            <h6 class="text-center mb-3">Variability Analysis (Std Dev)</h6>
-                            <canvas id="variabilityChart" style="max-height: 300px;"></canvas>
+                            <canvas id="variabilityChart" style="max-height: 350px;"></canvas>
                         </div>
                     </div>
                 </div>
                 <div class="row g-3 mt-2">
                     <div class="col-md-12">
                         <div class="glass-card p-3">
-                            <h6 class="text-center mb-3">Range Analysis (Min-Max)</h6>
-                            <canvas id="rangeChart" style="max-height: 300px;"></canvas>
+                            <canvas id="rangeChart" style="max-height: 350px;"></canvas>
                         </div>
                     </div>
                 </div>
@@ -996,13 +994,15 @@ function showResult(data) {
     }
 
     const html = `
-        <div class="glass-card position-relative" id="resultsCard">
-            <button class="btn btn-sm btn-outline-danger position-absolute"
-                    style="top: 10px; right: 10px; z-index: 10;"
-                    onclick="closeResultsCard()"
-                    title="Close preview">
-                <i class="bi bi-x-lg"></i>
-            </button>
+        <div class="glass-card position-relative" id="resultsCard" style="border: 2px solid rgba(16, 185, 129, 0.3);">
+            <div class="d-flex justify-content-between align-items-center p-2" style="background: rgba(16, 185, 129, 0.1); border-bottom: 1px solid rgba(16, 185, 129, 0.2);">
+                <span class="badge bg-success"><i class="bi bi-pin-angle-fill"></i> Persistent View - Won't Auto-Close</span>
+                <button class="btn btn-sm btn-outline-danger"
+                        onclick="closeResultsCard()"
+                        title="Close results (manual only)">
+                    <i class="bi bi-x-lg"></i> Close
+                </button>
+            </div>
             <div class="card-body">
                 <div class="alert alert-success alert-fancy mb-0">
                     <h5><i class="bi bi-check-circle-fill"></i> Generation Complete!</h5>
@@ -1050,15 +1050,22 @@ function showResult(data) {
     `;
     document.getElementById('statusContainer').innerHTML = html;
 
-    // Create charts if statistics exist
-    if (data.statistics && Object.keys(data.statistics).length > 0) {
-        createCharts(data.statistics);
+    // Create charts if timeseries data exists
+    if (data.timeseries && data.timeseries.length > 0 && data.metrics_info && data.metrics_info.length > 0) {
+        setTimeout(() => {
+            createTimeSeriesCharts(data.timeseries, data.metrics_info, data.statistics);
+        }, 100);
+    } else if (data.statistics && Object.keys(data.statistics).length > 0) {
+        // Fallback to old charts if no timeseries data
+        setTimeout(() => {
+            createCharts(data.statistics);
+        }, 100);
     }
 
     // Scroll to results
     setTimeout(() => {
         document.getElementById('resultsCard').scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }, 100);
+    }, 200);
 }
 
 // Close results card
@@ -1270,6 +1277,448 @@ function createCharts(statistics) {
                             color: '#fff',
                             maxRotation: 45,
                             minRotation: 45
+                        }
+                    }
+                }
+            }
+        });
+    }
+}
+
+// Create professional time-series charts with timestamps
+function createTimeSeriesCharts(timeseriesData, metricsInfo, statistics) {
+    // Extract timestamps
+    const timestamps = timeseriesData.map(row => {
+        const date = new Date(row.timestamp);
+        return date.toLocaleString('en-US', {
+            month: 'short',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+    });
+
+    // Professional color palette
+    const colorPalette = [
+        { border: 'rgba(59, 130, 246, 1)', bg: 'rgba(59, 130, 246, 0.1)' },   // blue
+        { border: 'rgba(16, 185, 129, 1)', bg: 'rgba(16, 185, 129, 0.1)' },   // green
+        { border: 'rgba(249, 115, 22, 1)', bg: 'rgba(249, 115, 22, 0.1)' },   // orange
+        { border: 'rgba(139, 92, 246, 1)', bg: 'rgba(139, 92, 246, 0.1)' },   // purple
+        { border: 'rgba(236, 72, 153, 1)', bg: 'rgba(236, 72, 153, 0.1)' },   // pink
+        { border: 'rgba(245, 158, 11, 1)', bg: 'rgba(245, 158, 11, 0.1)' },   // amber
+        { border: 'rgba(239, 68, 68, 1)', bg: 'rgba(239, 68, 68, 0.1)' },     // red
+        { border: 'rgba(20, 184, 166, 1)', bg: 'rgba(20, 184, 166, 0.1)' },   // teal
+        { border: 'rgba(168, 85, 247, 1)', bg: 'rgba(168, 85, 247, 0.1)' },   // violet
+        { border: 'rgba(34, 197, 94, 1)', bg: 'rgba(34, 197, 94, 0.1)' }      // lime
+    ];
+
+    // Group metrics by category
+    const metricsByCategory = {};
+    metricsInfo.forEach(metric => {
+        const category = metric.category || 'general';
+        if (!metricsByCategory[category]) {
+            metricsByCategory[category] = [];
+        }
+        metricsByCategory[category].push(metric);
+    });
+
+    // Chart 1: Primary Time Series - Show first 5 metrics or by category
+    const primaryMetrics = metricsInfo.slice(0, Math.min(5, metricsInfo.length));
+    const primaryDatasets = primaryMetrics.map((metric, index) => {
+        const values = timeseriesData.map(row => row[metric.column]);
+        const color = colorPalette[index % colorPalette.length];
+
+        return {
+            label: `${metric.entity_id} - ${metric.display_name}${metric.unit ? ' (' + metric.unit + ')' : ''}`,
+            data: values,
+            borderColor: color.border,
+            backgroundColor: color.bg,
+            borderWidth: 2,
+            fill: true,
+            tension: 0.4,
+            pointRadius: 3,
+            pointHoverRadius: 5,
+            pointBackgroundColor: color.border,
+            pointBorderColor: '#fff',
+            pointBorderWidth: 2
+        };
+    });
+
+    const primaryCtx = document.getElementById('metricsBarChart');
+    if (primaryCtx) {
+        new Chart(primaryCtx, {
+            type: 'line',
+            data: {
+                labels: timestamps,
+                datasets: primaryDatasets
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                interaction: {
+                    mode: 'index',
+                    intersect: false
+                },
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Primary Metrics - Time Series Analysis',
+                        color: '#fff',
+                        font: {
+                            size: 14,
+                            weight: 'bold'
+                        },
+                        padding: {
+                            top: 5,
+                            bottom: 10
+                        }
+                    },
+                    legend: {
+                        display: true,
+                        position: 'bottom',
+                        labels: {
+                            color: '#fff',
+                            usePointStyle: true,
+                            padding: 12,
+                            font: {
+                                size: 11
+                            }
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                        titleColor: '#fff',
+                        bodyColor: '#fff',
+                        borderColor: 'rgba(255, 255, 255, 0.2)',
+                        borderWidth: 1,
+                        padding: 12,
+                        displayColors: true,
+                        callbacks: {
+                            label: function(context) {
+                                const metricInfo = primaryMetrics[context.datasetIndex];
+                                return `${metricInfo.display_name}: ${context.parsed.y.toFixed(2)}${metricInfo.unit ? ' ' + metricInfo.unit : ''}`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: false,
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.1)',
+                            drawBorder: false
+                        },
+                        ticks: {
+                            color: '#fff',
+                            font: {
+                                size: 10
+                            }
+                        },
+                        title: {
+                            display: true,
+                            text: 'Metric Values',
+                            color: '#fff',
+                            font: {
+                                size: 11,
+                                weight: 'bold'
+                            }
+                        }
+                    },
+                    x: {
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.05)',
+                            drawBorder: false
+                        },
+                        ticks: {
+                            color: '#fff',
+                            maxRotation: 45,
+                            minRotation: 30,
+                            font: {
+                                size: 9
+                            },
+                            maxTicksLimit: 15
+                        },
+                        title: {
+                            display: true,
+                            text: 'Timestamp',
+                            color: '#fff',
+                            font: {
+                                size: 11,
+                                weight: 'bold'
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    // Chart 2: Category-based comparison or remaining metrics
+    const remainingMetrics = metricsInfo.slice(5, Math.min(10, metricsInfo.length));
+    if (remainingMetrics.length > 0) {
+        const secondaryDatasets = remainingMetrics.map((metric, index) => {
+            const values = timeseriesData.map(row => row[metric.column]);
+            const color = colorPalette[(index + 5) % colorPalette.length];
+
+            return {
+                label: `${metric.entity_id} - ${metric.display_name}${metric.unit ? ' (' + metric.unit + ')' : ''}`,
+                data: values,
+                borderColor: color.border,
+                backgroundColor: color.bg,
+                borderWidth: 2,
+                fill: true,
+                tension: 0.4,
+                pointRadius: 3,
+                pointHoverRadius: 5,
+                pointBackgroundColor: color.border,
+                pointBorderColor: '#fff',
+                pointBorderWidth: 2
+            };
+        });
+
+        const secondaryCtx = document.getElementById('variabilityChart');
+        if (secondaryCtx) {
+            new Chart(secondaryCtx, {
+                type: 'line',
+                data: {
+                    labels: timestamps,
+                    datasets: secondaryDatasets
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false
+                    },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Secondary Metrics - Time Series Analysis',
+                            color: '#fff',
+                            font: {
+                                size: 14,
+                                weight: 'bold'
+                            },
+                            padding: {
+                                top: 5,
+                                bottom: 10
+                            }
+                        },
+                        legend: {
+                            display: true,
+                            position: 'bottom',
+                            labels: {
+                                color: '#fff',
+                                usePointStyle: true,
+                                padding: 12,
+                                font: {
+                                    size: 11
+                                }
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                            titleColor: '#fff',
+                            bodyColor: '#fff',
+                            borderColor: 'rgba(255, 255, 255, 0.2)',
+                            borderWidth: 1,
+                            padding: 12,
+                            displayColors: true,
+                            callbacks: {
+                                label: function(context) {
+                                    const metricInfo = remainingMetrics[context.datasetIndex];
+                                    return `${metricInfo.display_name}: ${context.parsed.y.toFixed(2)}${metricInfo.unit ? ' ' + metricInfo.unit : ''}`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)',
+                                drawBorder: false
+                            },
+                            ticks: {
+                                color: '#fff',
+                                font: {
+                                    size: 10
+                                }
+                            },
+                            title: {
+                                display: true,
+                                text: 'Metric Values',
+                                color: '#fff',
+                                font: {
+                                    size: 11,
+                                    weight: 'bold'
+                                }
+                            }
+                        },
+                        x: {
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.05)',
+                                drawBorder: false
+                            },
+                            ticks: {
+                                color: '#fff',
+                                maxRotation: 45,
+                                minRotation: 30,
+                                font: {
+                                    size: 9
+                                },
+                                maxTicksLimit: 15
+                            },
+                            title: {
+                                display: true,
+                                text: 'Timestamp',
+                                color: '#fff',
+                                font: {
+                                    size: 11,
+                                    weight: 'bold'
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    }
+
+    // Chart 3: Statistical Summary with Entity Info
+    const allMetrics = metricsInfo.slice(0, Math.min(12, metricsInfo.length));
+    const metricLabels = allMetrics.map(m => m.display_name);
+    const means = allMetrics.map(m => statistics[m.column].mean);
+    const mins = allMetrics.map(m => statistics[m.column].min);
+    const maxs = allMetrics.map(m => statistics[m.column].max);
+
+    const rangeCtx = document.getElementById('rangeChart');
+    if (rangeCtx) {
+        new Chart(rangeCtx, {
+            type: 'bar',
+            data: {
+                labels: metricLabels,
+                datasets: [
+                    {
+                        label: 'Maximum',
+                        data: maxs,
+                        backgroundColor: 'rgba(239, 68, 68, 0.7)',
+                        borderColor: 'rgba(239, 68, 68, 1)',
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'Mean',
+                        data: means,
+                        backgroundColor: 'rgba(59, 130, 246, 0.7)',
+                        borderColor: 'rgba(59, 130, 246, 1)',
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'Minimum',
+                        data: mins,
+                        backgroundColor: 'rgba(16, 185, 129, 0.7)',
+                        borderColor: 'rgba(16, 185, 129, 1)',
+                        borderWidth: 1
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Statistical Summary - Range Analysis (Min, Mean, Max)',
+                        color: '#fff',
+                        font: {
+                            size: 14,
+                            weight: 'bold'
+                        },
+                        padding: {
+                            top: 5,
+                            bottom: 10
+                        }
+                    },
+                    legend: {
+                        display: true,
+                        position: 'top',
+                        labels: {
+                            color: '#fff',
+                            usePointStyle: false,
+                            padding: 15,
+                            font: {
+                                size: 12
+                            }
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                        titleColor: '#fff',
+                        bodyColor: '#fff',
+                        borderColor: 'rgba(255, 255, 255, 0.2)',
+                        borderWidth: 1,
+                        padding: 12,
+                        displayColors: true,
+                        callbacks: {
+                            title: function(context) {
+                                const metricInfo = allMetrics[context[0].dataIndex];
+                                return `${metricInfo.entity_id} - ${metricInfo.display_name}`;
+                            },
+                            label: function(context) {
+                                const metricInfo = allMetrics[context.dataIndex];
+                                return `${context.dataset.label}: ${context.parsed.y.toFixed(2)}${metricInfo.unit ? ' ' + metricInfo.unit : ''}`;
+                            },
+                            afterBody: function(context) {
+                                const metricInfo = allMetrics[context[0].dataIndex];
+                                return `\nEntity: ${metricInfo.entity_type}\nCategory: ${metricInfo.category}`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.1)',
+                            drawBorder: false
+                        },
+                        ticks: {
+                            color: '#fff',
+                            font: {
+                                size: 10
+                            }
+                        },
+                        title: {
+                            display: true,
+                            text: 'Value Range',
+                            color: '#fff',
+                            font: {
+                                size: 11,
+                                weight: 'bold'
+                            }
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        },
+                        ticks: {
+                            color: '#fff',
+                            maxRotation: 45,
+                            minRotation: 45,
+                            font: {
+                                size: 9
+                            }
+                        },
+                        title: {
+                            display: true,
+                            text: 'Metrics',
+                            color: '#fff',
+                            font: {
+                                size: 11,
+                                weight: 'bold'
+                            }
                         }
                     }
                 }
