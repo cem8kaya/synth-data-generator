@@ -488,24 +488,25 @@ function applyTemplate(config) {
 function addEntity(data = null) {
     const template = document.getElementById('entityTemplate');
     const clone = template.content.cloneNode(true);
-    
+
     if (data) {
         clone.querySelector('.entity-id').value = data.entity_id;
         clone.querySelector('.entity-type').value = data.entity_type;
         clone.querySelector('.entity-capacity').value = data.capacity || '';
         clone.querySelector('.entity-metadata').value = JSON.stringify(data.metadata || {});
-
-        // Add metrics
-        if (data.metrics) {
-            data.metrics.forEach(metric => {
-                addMetric({ ...metric, entity_id: data.entity_id });
-            });
-        }
     }
-    
+
+    // Append entity to DOM first so metrics can find it
     document.getElementById('entitiesList').appendChild(clone);
     updateCounts();
     updateMetricSelectors();
+
+    // Add metrics after entity is in the DOM
+    if (data && data.metrics) {
+        data.metrics.forEach(metric => {
+            addMetric({ ...metric, entity_id: data.entity_id });
+        });
+    }
 }
 
 // Remove Entity
@@ -519,18 +520,20 @@ function removeEntity(btn) {
 function addMetric(data = null) {
     const template = document.getElementById('metricTemplate');
     const clone = template.content.cloneNode(true);
-    
+
     // Populate entity selector
     const select = clone.querySelector('.metric-entity');
+    const entityIds = [];
     document.querySelectorAll('.entity-id').forEach(input => {
         if (input.value) {
             const option = document.createElement('option');
             option.value = input.value;
             option.textContent = input.value;
             select.appendChild(option);
+            entityIds.push(input.value);
         }
     });
-    
+
     if (data) {
         clone.querySelector('.metric-entity').value = data.entity_id || '';
         clone.querySelector('.metric-name').value = data.name;
@@ -540,8 +543,11 @@ function addMetric(data = null) {
         clone.querySelector('.metric-std').value = data.distribution.std || '';
         clone.querySelector('.metric-unit').value = data.unit || '';
         clone.querySelector('.metric-category').value = data.category || '';
+    } else if (entityIds.length === 1) {
+        // Auto-select the first entity if there's only one
+        select.value = entityIds[0];
     }
-    
+
     document.getElementById('metricsList').appendChild(clone);
     updateCounts();
 }
@@ -781,33 +787,135 @@ async function generateData() {
 
 // Show Result
 function showResult(data) {
+    // Build preview table if preview data exists
+    let previewHtml = '';
+    if (data.preview && data.preview.length > 0) {
+        const columns = Object.keys(data.preview[0]);
+        previewHtml = `
+            <div class="mt-4">
+                <h6><i class="bi bi-table"></i> Data Preview (First 10 Rows)</h6>
+                <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
+                    <table class="table table-sm table-striped table-hover">
+                        <thead class="table-dark sticky-top">
+                            <tr>
+                                ${columns.map(col => `<th>${col}</th>`).join('')}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${data.preview.map(row => `
+                                <tr>
+                                    ${columns.map(col => `<td>${formatValue(row[col])}</td>`).join('')}
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        `;
+    }
+
+    // Build statistics table if statistics exist
+    let statsHtml = '';
+    if (data.statistics && Object.keys(data.statistics).length > 0) {
+        statsHtml = `
+            <div class="mt-4">
+                <h6><i class="bi bi-bar-chart"></i> Statistics Summary</h6>
+                <div class="table-responsive">
+                    <table class="table table-sm table-bordered">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Metric</th>
+                                <th>Mean</th>
+                                <th>Std Dev</th>
+                                <th>Min</th>
+                                <th>Max</th>
+                                <th>Median</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${Object.entries(data.statistics).map(([metric, stats]) => `
+                                <tr>
+                                    <td><strong>${metric}</strong></td>
+                                    <td>${stats.mean.toFixed(2)}</td>
+                                    <td>${stats.std.toFixed(2)}</td>
+                                    <td>${stats.min.toFixed(2)}</td>
+                                    <td>${stats.max.toFixed(2)}</td>
+                                    <td>${stats.median.toFixed(2)}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        `;
+    }
+
     const html = `
-        <div class="glass-card">
+        <div class="glass-card" id="resultsCard">
             <div class="card-body">
-                <div class="alert alert-success alert-fancy">
+                <div class="alert alert-success alert-fancy mb-0">
                     <h5><i class="bi bi-check-circle-fill"></i> Generation Complete!</h5>
-                    <div class="row">
+                    <div class="row mt-3">
                         <div class="col-md-3">
-                            <strong>Records:</strong> ${data.metadata.num_records}
+                            <div class="text-center p-2">
+                                <i class="bi bi-file-earmark-text icon-lg text-primary"></i>
+                                <h4 class="mt-2 mb-0">${data.metadata.num_records.toLocaleString()}</h4>
+                                <small>Records</small>
+                            </div>
                         </div>
                         <div class="col-md-3">
-                            <strong>Entities:</strong> ${data.metadata.num_entities}
+                            <div class="text-center p-2">
+                                <i class="bi bi-server icon-lg text-success"></i>
+                                <h4 class="mt-2 mb-0">${data.metadata.num_entities}</h4>
+                                <small>Entities</small>
+                            </div>
                         </div>
                         <div class="col-md-3">
-                            <strong>Metrics:</strong> ${data.metadata.num_metrics}
+                            <div class="text-center p-2">
+                                <i class="bi bi-graph-up icon-lg text-info"></i>
+                                <h4 class="mt-2 mb-0">${data.metadata.num_metrics}</h4>
+                                <small>Metrics</small>
+                            </div>
                         </div>
                         <div class="col-md-3">
-                            <strong>Size:</strong> ${data.metadata.file_size_mb.toFixed(2)} MB
+                            <div class="text-center p-2">
+                                <i class="bi bi-file-binary icon-lg text-warning"></i>
+                                <h4 class="mt-2 mb-0">${data.metadata.file_size_mb.toFixed(2)} MB</h4>
+                                <small>File Size</small>
+                            </div>
                         </div>
                     </div>
-                    <a href="${data.download_url}" class="btn btn-success-fancy mt-3">
-                        <i class="bi bi-download"></i> Download Data
-                    </a>
+                    <div class="text-center mt-4">
+                        <a href="${data.download_url}" class="btn btn-success-fancy btn-lg" download>
+                            <i class="bi bi-download"></i> Download Generated Data
+                        </a>
+                    </div>
+                    ${previewHtml}
+                    ${statsHtml}
                 </div>
             </div>
         </div>
     `;
     document.getElementById('statusContainer').innerHTML = html;
+
+    // Scroll to results
+    setTimeout(() => {
+        document.getElementById('resultsCard').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 100);
+}
+
+// Helper function to format values in preview table
+function formatValue(value) {
+    if (value === null || value === undefined) {
+        return '<span class="text-muted">null</span>';
+    }
+    if (typeof value === 'number') {
+        return value.toFixed(2);
+    }
+    if (typeof value === 'string' && value.length > 50) {
+        return value.substring(0, 47) + '...';
+    }
+    return value;
 }
 
 // Export Config
