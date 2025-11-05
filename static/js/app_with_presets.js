@@ -306,14 +306,26 @@ const domainPresets = {
 document.addEventListener('DOMContentLoaded', function() {
     const now = new Date();
     const tomorrow = new Date(now.getTime() + 24 * 60 * 60 * 1000);
-    
+
     document.getElementById('startDate').value = now.toISOString().slice(0, 16);
     document.getElementById('endDate').value = tomorrow.toISOString().slice(0, 16);
-    
+
     updateDuration();
-    
-    document.getElementById('startDate').addEventListener('change', updateDuration);
-    document.getElementById('endDate').addEventListener('change', updateDuration);
+    updateStatistics();
+
+    document.getElementById('startDate').addEventListener('change', function() {
+        updateDuration();
+        updateStatistics();
+    });
+
+    document.getElementById('endDate').addEventListener('change', function() {
+        updateDuration();
+        updateStatistics();
+    });
+
+    document.getElementById('granularity').addEventListener('change', function() {
+        updateStatistics();
+    });
 });
 
 // Domain Selection
@@ -544,9 +556,73 @@ function removeMetric(btn) {
 function updateCounts() {
     const entityCount = document.querySelectorAll('.entity-item').length;
     const metricCount = document.querySelectorAll('.metric-item').length;
-    
-    document.getElementById('entityCount').textContent = entityCount;
-    document.getElementById('metricCount').textContent = metricCount;
+
+    const entityBadge = document.getElementById('entityCount');
+    const metricBadge = document.getElementById('metricCount');
+
+    // Add animation when count changes
+    entityBadge.classList.add('count-up');
+    metricBadge.classList.add('count-up');
+
+    entityBadge.textContent = entityCount;
+    metricBadge.textContent = metricCount;
+
+    setTimeout(() => {
+        entityBadge.classList.remove('count-up');
+        metricBadge.classList.remove('count-up');
+    }, 300);
+
+    // Update statistics dashboard
+    updateStatistics();
+}
+
+// Update Statistics Dashboard
+function updateStatistics() {
+    const entityCount = document.querySelectorAll('.entity-item').length;
+    const metricCount = document.querySelectorAll('.metric-item').length;
+
+    // Show/hide stats section
+    const statsSection = document.getElementById('configStats');
+    if (entityCount > 0 || metricCount > 0) {
+        statsSection.style.display = 'flex';
+    } else {
+        statsSection.style.display = 'none';
+        return;
+    }
+
+    // Update entity count
+    document.getElementById('statEntities').textContent = entityCount;
+
+    // Update metric count
+    document.getElementById('statMetrics').textContent = metricCount;
+
+    // Calculate duration
+    const startDate = new Date(document.getElementById('startDate').value);
+    const endDate = new Date(document.getElementById('endDate').value);
+    const diff = endDate - startDate;
+    const hours = Math.floor(diff / (1000 * 60 * 60));
+    const days = Math.floor(hours / 24);
+
+    let durationText = '';
+    if (days > 0) {
+        durationText = `${days}d ${hours % 24}h`;
+    } else {
+        durationText = `${hours}h`;
+    }
+    document.getElementById('statDuration').textContent = durationText;
+
+    // Estimate data points
+    const granularity = parseInt(document.getElementById('granularity').value);
+    const totalMinutes = diff / (1000 * 60);
+    const dataPoints = Math.floor(totalMinutes / granularity) * metricCount;
+
+    if (dataPoints > 1000000) {
+        document.getElementById('statPoints').textContent = (dataPoints / 1000000).toFixed(1) + 'M';
+    } else if (dataPoints > 1000) {
+        document.getElementById('statPoints').textContent = (dataPoints / 1000).toFixed(1) + 'K';
+    } else {
+        document.getElementById('statPoints').textContent = dataPoints.toLocaleString();
+    }
 }
 
 // Update Metric Selectors
@@ -634,6 +710,9 @@ async function validateConfig() {
         return;
     }
 
+    const btn = event.target.closest('button');
+    btn.setAttribute('data-loading', 'true');
+    btn.disabled = true;
     showLoading(true);
 
     try {
@@ -656,6 +735,8 @@ async function validateConfig() {
         showNotification('Validation failed', 'danger');
     } finally {
         showLoading(false);
+        btn.setAttribute('data-loading', 'false');
+        btn.disabled = false;
     }
 }
 
@@ -668,6 +749,9 @@ async function generateData() {
         return;
     }
 
+    const btn = event.target.closest('button');
+    btn.setAttribute('data-loading', 'true');
+    btn.disabled = true;
     showLoading(true);
 
     try {
@@ -690,6 +774,8 @@ async function generateData() {
         showNotification('Generation failed', 'danger');
     } finally {
         showLoading(false);
+        btn.setAttribute('data-loading', 'false');
+        btn.disabled = false;
     }
 }
 
@@ -738,10 +824,23 @@ function exportConfig() {
 
 // Clear All
 function clearAll() {
+    const entityCount = document.querySelectorAll('.entity-item').length;
+    const metricCount = document.querySelectorAll('.metric-item').length;
+
+    // Confirm if there's data to clear
+    if (entityCount > 0 || metricCount > 0) {
+        const message = `Are you sure you want to clear ${entityCount} entities and ${metricCount} metrics?`;
+        if (!confirm(message)) {
+            return;
+        }
+    }
+
     document.getElementById('entitiesList').innerHTML = '';
     document.getElementById('metricsList').innerHTML = '';
     document.getElementById('statusContainer').innerHTML = '';
     updateCounts();
+
+    showNotification('Configuration cleared', 'info');
 }
 
 // Toggle Advanced
@@ -792,8 +891,16 @@ function showNotification(message, type = 'info') {
         info: 'alert-info'
     };
 
+    const icons = {
+        success: 'check-circle-fill',
+        danger: 'exclamation-triangle-fill',
+        warning: 'exclamation-circle-fill',
+        info: 'info-circle-fill'
+    };
+
     const html = `
         <div class="alert ${colors[type]} alert-fancy alert-dismissible fade show mt-3" role="alert">
+            <i class="bi bi-${icons[type]} me-2"></i>
             ${message}
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
@@ -802,10 +909,79 @@ function showNotification(message, type = 'info') {
     const container = document.getElementById('statusContainer');
     container.insertAdjacentHTML('beforeend', html);
 
+    // Auto-dismiss after 5 seconds
     setTimeout(() => {
         const alerts = container.querySelectorAll('.alert');
-        if (alerts.length > 3) {
-            alerts[0].remove();
+        if (alerts.length > 0) {
+            alerts[0].classList.remove('show');
+            setTimeout(() => alerts[0]?.remove(), 150);
         }
     }, 5000);
+
+    // Keep max 3 alerts
+    const alerts = container.querySelectorAll('.alert');
+    if (alerts.length > 3) {
+        alerts[0].remove();
+    }
 }
+
+// Add visual feedback for all buttons
+document.addEventListener('DOMContentLoaded', function() {
+    // Add ripple effect to all buttons
+    document.querySelectorAll('.btn, .domain-card, .preset-card').forEach(element => {
+        element.addEventListener('click', function(e) {
+            const ripple = document.createElement('span');
+            const rect = this.getBoundingClientRect();
+            const size = Math.max(rect.width, rect.height);
+            const x = e.clientX - rect.left - size / 2;
+            const y = e.clientY - rect.top - size / 2;
+
+            ripple.style.cssText = `
+                position: absolute;
+                width: ${size}px;
+                height: ${size}px;
+                border-radius: 50%;
+                background: rgba(255, 255, 255, 0.5);
+                left: ${x}px;
+                top: ${y}px;
+                pointer-events: none;
+                transform: scale(0);
+                animation: ripple 0.6s ease-out;
+            `;
+
+            this.style.position = 'relative';
+            this.style.overflow = 'hidden';
+            this.appendChild(ripple);
+
+            setTimeout(() => ripple.remove(), 600);
+        });
+    });
+
+    // Add CSS for ripple animation
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes ripple {
+            to {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+    `;
+    document.head.appendChild(style);
+
+    // Enhance form validation with visual feedback
+    document.querySelectorAll('input, select, textarea').forEach(input => {
+        input.addEventListener('invalid', function() {
+            this.classList.add('shake');
+            setTimeout(() => this.classList.remove('shake'), 500);
+        });
+
+        input.addEventListener('input', function() {
+            if (this.validity.valid) {
+                this.style.borderColor = '#10b981';
+            } else if (this.value.length > 0) {
+                this.style.borderColor = '#ef4444';
+            }
+        });
+    });
+});
