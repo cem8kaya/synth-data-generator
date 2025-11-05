@@ -966,10 +966,19 @@ function showResult(data) {
         `;
 
         // Prepare chart data for visualizations
+        const totalMetrics = Object.keys(data.statistics).length;
         chartDataHtml = `
             <div class="mt-4" id="visualizationSection">
-                <h6><i class="bi bi-graph-up-arrow"></i> Professional Time-Series Visualizations</h6>
-                <p class="text-muted small mb-3">Real-time trend analysis with timestamps, metric names, and entity information</p>
+                <div class="visualization-header p-3 mb-3" style="background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%); border-radius: 10px; border-left: 4px solid #3b82f6;">
+                    <h6 class="mb-2"><i class="bi bi-graph-up-arrow"></i> Professional Time-Series Visualizations</h6>
+                    <p class="text-muted small mb-2"><i class="bi bi-info-circle"></i> Real-time trend analysis with detailed metrics, entity information, and statistical insights</p>
+                    <div class="d-flex gap-3 flex-wrap small">
+                        <span class="badge bg-primary"><i class="bi bi-bar-chart-line"></i> ${totalMetrics} Total Metrics</span>
+                        <span class="badge bg-info"><i class="bi bi-clock-history"></i> Time-Series Data</span>
+                        <span class="badge bg-success"><i class="bi bi-gem"></i> Enhanced Legends</span>
+                        <span class="badge bg-warning"><i class="bi bi-pie-chart"></i> Statistical Analysis</span>
+                    </div>
+                </div>
                 <div class="row g-3 mt-2">
                     <div class="col-md-6">
                         <div class="glass-card p-3">
@@ -1004,7 +1013,7 @@ function showResult(data) {
                 </button>
             </div>
             <div class="card-body">
-                <div class="alert alert-success alert-fancy mb-0">
+                <div class="results-content-success mb-0">
                     <h5><i class="bi bi-check-circle-fill"></i> Generation Complete!</h5>
                     <div class="row mt-3">
                         <div class="col-md-3">
@@ -1379,10 +1388,39 @@ function createTimeSeriesCharts(timeseriesData, metricsInfo, statistics) {
                         labels: {
                             color: '#fff',
                             usePointStyle: true,
-                            padding: 12,
+                            padding: 15,
                             font: {
-                                size: 11
+                                size: 12,
+                                weight: '600'
+                            },
+                            boxWidth: 12,
+                            boxHeight: 12,
+                            generateLabels: function(chart) {
+                                const datasets = chart.data.datasets;
+                                return datasets.map((dataset, i) => {
+                                    const metricInfo = primaryMetrics[i];
+                                    return {
+                                        text: `${dataset.label} [Entity: ${metricInfo.entity_type} | Category: ${metricInfo.category}]`,
+                                        fillStyle: dataset.borderColor,
+                                        strokeStyle: dataset.borderColor,
+                                        lineWidth: 2,
+                                        hidden: false,
+                                        index: i
+                                    };
+                                });
                             }
+                        }
+                    },
+                    subtitle: {
+                        display: true,
+                        text: `Showing ${primaryMetrics.length} metrics with entity and category information`,
+                        color: 'rgba(255, 255, 255, 0.7)',
+                        font: {
+                            size: 11,
+                            style: 'italic'
+                        },
+                        padding: {
+                            bottom: 10
                         }
                     },
                     tooltip: {
@@ -1511,10 +1549,39 @@ function createTimeSeriesCharts(timeseriesData, metricsInfo, statistics) {
                             labels: {
                                 color: '#fff',
                                 usePointStyle: true,
-                                padding: 12,
+                                padding: 15,
                                 font: {
-                                    size: 11
+                                    size: 12,
+                                    weight: '600'
+                                },
+                                boxWidth: 12,
+                                boxHeight: 12,
+                                generateLabels: function(chart) {
+                                    const datasets = chart.data.datasets;
+                                    return datasets.map((dataset, i) => {
+                                        const metricInfo = remainingMetrics[i];
+                                        return {
+                                            text: `${dataset.label} [Entity: ${metricInfo.entity_type} | Category: ${metricInfo.category}]`,
+                                            fillStyle: dataset.borderColor,
+                                            strokeStyle: dataset.borderColor,
+                                            lineWidth: 2,
+                                            hidden: false,
+                                            index: i
+                                        };
+                                    });
                                 }
+                            }
+                        },
+                        subtitle: {
+                            display: true,
+                            text: `Additional ${remainingMetrics.length} metrics for comprehensive analysis`,
+                            color: 'rgba(255, 255, 255, 0.7)',
+                            font: {
+                                size: 11,
+                                style: 'italic'
+                            },
+                            padding: {
+                                bottom: 10
                             }
                         },
                         tooltip: {
@@ -1643,13 +1710,48 @@ function createTimeSeriesCharts(timeseriesData, metricsInfo, statistics) {
                     legend: {
                         display: true,
                         position: 'top',
+                        align: 'center',
                         labels: {
                             color: '#fff',
-                            usePointStyle: false,
-                            padding: 15,
+                            usePointStyle: true,
+                            padding: 20,
                             font: {
-                                size: 12
+                                size: 13,
+                                weight: '700'
+                            },
+                            boxWidth: 15,
+                            boxHeight: 15,
+                            generateLabels: function(chart) {
+                                const datasets = chart.data.datasets;
+                                return datasets.map((dataset, i) => {
+                                    const descriptions = {
+                                        'Maximum': 'Highest value recorded',
+                                        'Mean': 'Average across all data points',
+                                        'Minimum': 'Lowest value recorded'
+                                    };
+                                    return {
+                                        text: `${dataset.label} (${descriptions[dataset.label]})`,
+                                        fillStyle: dataset.backgroundColor,
+                                        strokeStyle: dataset.borderColor,
+                                        lineWidth: 2,
+                                        hidden: false,
+                                        index: i
+                                    };
+                                });
                             }
+                        }
+                    },
+                    subtitle: {
+                        display: true,
+                        text: `Statistical range analysis across ${allMetrics.length} metrics - Compare min, mean, and max values`,
+                        color: 'rgba(255, 255, 255, 0.7)',
+                        font: {
+                            size: 11,
+                            style: 'italic'
+                        },
+                        padding: {
+                            top: 5,
+                            bottom: 15
                         }
                     },
                     tooltip: {
@@ -1669,9 +1771,17 @@ function createTimeSeriesCharts(timeseriesData, metricsInfo, statistics) {
                                 const metricInfo = allMetrics[context.dataIndex];
                                 return `${context.dataset.label}: ${context.parsed.y.toFixed(2)}${metricInfo.unit ? ' ' + metricInfo.unit : ''}`;
                             },
+                            afterLabel: function(context) {
+                                const metricInfo = allMetrics[context.dataIndex];
+                                const stats = statistics[metricInfo.column];
+                                const range = stats.max - stats.min;
+                                const stdDevPct = (stats.std / stats.mean * 100).toFixed(1);
+                                return `Range: ${range.toFixed(2)}${metricInfo.unit ? ' ' + metricInfo.unit : ''}\nStd Dev: ${stats.std.toFixed(2)} (${stdDevPct}%)`;
+                            },
                             afterBody: function(context) {
                                 const metricInfo = allMetrics[context[0].dataIndex];
-                                return `\nEntity: ${metricInfo.entity_type}\nCategory: ${metricInfo.category}`;
+                                const stats = statistics[metricInfo.column];
+                                return `\n📊 Entity: ${metricInfo.entity_type}\n📁 Category: ${metricInfo.category}\n📈 Median: ${stats.median.toFixed(2)}${metricInfo.unit ? ' ' + metricInfo.unit : ''}`;
                             }
                         }
                     }
