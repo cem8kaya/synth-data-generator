@@ -11,6 +11,139 @@ let currentConfig = null;
 const domainPresets = {
     telecom: [
         {
+            id: 'ims_volte',
+            name: 'IMS & VoLTE Monitor',
+            icon: 'telephone-fill',
+            description: 'IMS core and VoLTE service quality metrics',
+            duration: '24h',
+            entities: [
+                {
+                    entity_id: 'IMS-CSCF-01',
+                    entity_type: 'IMS_CSCF',
+                    capacity: 50000,
+                    metadata: { location: 'core-network', function: 'CSCF' },
+                    metrics: [
+                        { name: 'sip_register_rate', display_name: 'SIP Registration Rate', distribution: { type: 'poisson', mean: 250, std: 25 }, unit: 'reg/min', category: 'ims' },
+                        { name: 'sip_register_success', display_name: 'SIP Registration Success Rate', distribution: { type: 'beta', mean: 99.7, std: 0.2 }, unit: '%', category: 'ims' },
+                        { name: 'invite_setup_time', display_name: 'INVITE Setup Time', distribution: { type: 'gamma', mean: 180, std: 35 }, unit: 'ms', category: 'ims' },
+                        { name: 'volte_call_setup_success', display_name: 'VoLTE Call Setup Success', distribution: { type: 'beta', mean: 99.5, std: 0.3 }, unit: '%', category: 'volte' },
+                        { name: 'volte_mos_score', display_name: 'VoLTE MOS Score', distribution: { type: 'beta', mean: 4.2, std: 0.3, min_value: 3.5, max_value: 4.5 }, unit: 'MOS', category: 'volte' },
+                        { name: 'call_drop_rate', display_name: 'Call Drop Rate', distribution: { type: 'beta', mean: 0.5, std: 0.15 }, unit: '%', category: 'volte' }
+                    ]
+                }
+            ]
+        },
+        {
+            id: '5g_core_amf',
+            name: '5G Core - AMF',
+            icon: 'reception-4',
+            description: '5G Access and Mobility Management Function',
+            duration: '24h',
+            entities: [
+                {
+                    entity_id: '5GC-AMF-01',
+                    entity_type: '5G_AMF',
+                    capacity: 500000,
+                    metadata: { network: '5G-SA', nf_type: 'AMF' },
+                    metrics: [
+                        { name: 'registration_requests', display_name: 'Registration Requests', distribution: { type: 'poisson', mean: 300, std: 30 }, unit: 'req/min', category: '5g_registration' },
+                        { name: 'registration_success_rate', display_name: 'Registration Success Rate', distribution: { type: 'beta', mean: 99.8, std: 0.15 }, unit: '%', category: '5g_registration' },
+                        { name: 'handover_success_rate', display_name: 'Handover Success Rate', distribution: { type: 'beta', mean: 99.6, std: 0.25 }, unit: '%', category: '5g_mobility' },
+                        { name: 'n2_signaling_latency', display_name: 'N2 Signaling Latency', distribution: { type: 'gamma', mean: 25, std: 8 }, unit: 'ms', category: '5g_performance' },
+                        { name: 'active_ue_count', display_name: 'Active UE Count', distribution: { type: 'normal', mean: 25000, std: 3000 }, unit: 'UEs', category: '5g_capacity' }
+                    ]
+                }
+            ]
+        },
+        {
+            id: '5g_core_smf',
+            name: '5G Core - SMF',
+            icon: 'hdd-network',
+            description: '5G Session Management Function',
+            duration: '24h',
+            entities: [
+                {
+                    entity_id: '5GC-SMF-01',
+                    entity_type: '5G_SMF',
+                    capacity: 300000,
+                    metadata: { network: '5G-SA', nf_type: 'SMF' },
+                    metrics: [
+                        { name: 'pdu_session_establishment_rate', display_name: 'PDU Session Establishment Rate', distribution: { type: 'poisson', mean: 200, std: 20 }, unit: 'sessions/min', category: '5g_session' },
+                        { name: 'pdu_session_success_rate', display_name: 'PDU Session Success Rate', distribution: { type: 'beta', mean: 99.7, std: 0.2 }, unit: '%', category: '5g_session' },
+                        { name: 'qos_flow_setup_success', display_name: 'QoS Flow Setup Success', distribution: { type: 'beta', mean: 99.8, std: 0.15 }, unit: '%', category: '5g_qos' },
+                        { name: 'n4_session_latency', display_name: 'N4 Session Setup Latency', distribution: { type: 'gamma', mean: 30, std: 10 }, unit: 'ms', category: '5g_performance' },
+                        { name: 'active_pdu_sessions', display_name: 'Active PDU Sessions', distribution: { type: 'normal', mean: 50000, std: 5000 }, unit: 'sessions', category: '5g_capacity' }
+                    ]
+                }
+            ]
+        },
+        {
+            id: '5g_core_upf',
+            name: '5G Core - UPF',
+            icon: 'diagram-3',
+            description: '5G User Plane Function',
+            duration: '24h',
+            entities: [
+                {
+                    entity_id: '5GC-UPF-01',
+                    entity_type: '5G_UPF',
+                    capacity: 100000,
+                    metadata: { network: '5G-SA', nf_type: 'UPF' },
+                    metrics: [
+                        { name: 'throughput_uplink', display_name: 'Uplink Throughput', distribution: { type: 'lognormal', mean: 2500, std: 400 }, unit: 'Mbps', category: '5g_throughput' },
+                        { name: 'throughput_downlink', display_name: 'Downlink Throughput', distribution: { type: 'lognormal', mean: 5000, std: 800 }, unit: 'Mbps', category: '5g_throughput' },
+                        { name: 'packet_loss_rate', display_name: 'Packet Loss Rate', distribution: { type: 'beta', mean: 0.3, std: 0.1 }, unit: '%', category: '5g_quality' },
+                        { name: 'latency', display_name: 'User Plane Latency', distribution: { type: 'gamma', mean: 15, std: 5 }, unit: 'ms', category: '5g_performance' },
+                        { name: 'cpu_utilization', display_name: 'CPU Utilization', distribution: { type: 'beta', mean: 65, std: 10 }, unit: '%', category: '5g_resources' },
+                        { name: 'active_bearers', display_name: 'Active Bearers', distribution: { type: 'normal', mean: 80000, std: 8000 }, unit: 'bearers', category: '5g_capacity' }
+                    ]
+                }
+            ]
+        },
+        {
+            id: '5g_core_nssf',
+            name: '5G Core - NSSF',
+            icon: 'layers',
+            description: '5G Network Slice Selection Function',
+            duration: '24h',
+            entities: [
+                {
+                    entity_id: '5GC-NSSF-01',
+                    entity_type: '5G_NSSF',
+                    capacity: 100000,
+                    metadata: { network: '5G-SA', nf_type: 'NSSF' },
+                    metrics: [
+                        { name: 'slice_selection_rate', display_name: 'Slice Selection Rate', distribution: { type: 'poisson', mean: 150, std: 15 }, unit: 'req/min', category: '5g_slicing' },
+                        { name: 'slice_selection_success', display_name: 'Slice Selection Success Rate', distribution: { type: 'beta', mean: 99.9, std: 0.1 }, unit: '%', category: '5g_slicing' },
+                        { name: 'slice_response_time', display_name: 'Slice Selection Response Time', distribution: { type: 'gamma', mean: 20, std: 5 }, unit: 'ms', category: '5g_performance' }
+                    ]
+                }
+            ]
+        },
+        {
+            id: 'telco_cloud',
+            name: 'Telco Cloud Infrastructure',
+            icon: 'cloud-fill',
+            description: 'Cloud infrastructure metrics for NFV/VNF',
+            duration: '24h',
+            entities: [
+                {
+                    entity_id: 'TELCO-CLOUD-01',
+                    entity_type: 'TelcoCloud',
+                    capacity: 10000,
+                    metadata: { deployment: 'openstack', type: 'nfvi' },
+                    metrics: [
+                        { name: 'vnf_deployment_success', display_name: 'VNF Deployment Success Rate', distribution: { type: 'beta', mean: 98.5, std: 0.8 }, unit: '%', category: 'cloud_orchestration' },
+                        { name: 'vnf_scaling_time', display_name: 'VNF Auto-Scaling Time', distribution: { type: 'gamma', mean: 120, std: 30 }, unit: 'seconds', category: 'cloud_orchestration' },
+                        { name: 'vm_cpu_utilization', display_name: 'VM CPU Utilization', distribution: { type: 'beta', mean: 60, std: 12 }, unit: '%', category: 'cloud_resources' },
+                        { name: 'vm_memory_utilization', display_name: 'VM Memory Utilization', distribution: { type: 'beta', mean: 70, std: 10 }, unit: '%', category: 'cloud_resources' },
+                        { name: 'storage_iops', display_name: 'Storage IOPS', distribution: { type: 'lognormal', mean: 15000, std: 2500 }, unit: 'IOPS', category: 'cloud_storage' },
+                        { name: 'network_bandwidth', display_name: 'Network Bandwidth Usage', distribution: { type: 'lognormal', mean: 3500, std: 600 }, unit: 'Mbps', category: 'cloud_network' }
+                    ]
+                }
+            ]
+        },
+        {
             id: 'voip_service',
             name: 'VoIP Service Monitor',
             icon: 'telephone',
@@ -25,33 +158,15 @@ const domainPresets = {
                     metrics: [
                         { name: 'call_setup_rate', display_name: 'Call Setup Rate', distribution: { type: 'poisson', mean: 120, std: 15 }, unit: 'calls/min', category: 'performance' },
                         { name: 'call_success_rate', display_name: 'Call Success Rate', distribution: { type: 'beta', mean: 99.5, std: 0.3 }, unit: '%', category: 'quality' },
-                        { name: 'jitter', display_name: 'Jitter', distribution: { type: 'gamma', mean: 15, std: 5 }, unit: 'ms', category: 'quality' }
-                    ]
-                }
-            ]
-        },
-        {
-            id: '5g_network',
-            name: '5G Network Performance',
-            icon: 'reception-4',
-            description: '5G Core network KPIs and metrics',
-            duration: '24h',
-            entities: [
-                {
-                    entity_id: '5GC-AMF-01',
-                    entity_type: 'AMF',
-                    capacity: 500000,
-                    metadata: { network: '5G-SA' },
-                    metrics: [
-                        { name: 'registration_success', display_name: 'Registration Success Rate', distribution: { type: 'beta', mean: 99.8, std: 0.2 }, unit: '%', category: 'registration' },
-                        { name: 'pdu_session_rate', display_name: 'PDU Session Rate', distribution: { type: 'poisson', mean: 200, std: 20 }, unit: 'sessions/min', category: 'sessions' }
+                        { name: 'jitter', display_name: 'Jitter', distribution: { type: 'gamma', mean: 15, std: 5 }, unit: 'ms', category: 'quality' },
+                        { name: 'packet_loss', display_name: 'Packet Loss', distribution: { type: 'beta', mean: 0.8, std: 0.3 }, unit: '%', category: 'quality' }
                     ]
                 }
             ]
         },
         {
             id: 'network_latency',
-            name: 'Network Latency Analysis',
+            name: 'Network Performance',
             icon: 'speedometer2',
             description: 'Track network latency and throughput',
             duration: '12h',
@@ -792,7 +907,7 @@ function showResult(data) {
     if (data.preview && data.preview.length > 0) {
         const columns = Object.keys(data.preview[0]);
         previewHtml = `
-            <div class="mt-4">
+            <div class="mt-4" id="dataPreviewSection">
                 <h6><i class="bi bi-table"></i> Data Preview (First 10 Rows)</h6>
                 <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
                     <table class="table table-sm table-striped table-hover">
@@ -816,6 +931,7 @@ function showResult(data) {
 
     // Build statistics table if statistics exist
     let statsHtml = '';
+    let chartDataHtml = '';
     if (data.statistics && Object.keys(data.statistics).length > 0) {
         statsHtml = `
             <div class="mt-4">
@@ -848,10 +964,45 @@ function showResult(data) {
                 </div>
             </div>
         `;
+
+        // Prepare chart data for visualizations
+        chartDataHtml = `
+            <div class="mt-4">
+                <h6><i class="bi bi-graph-up-arrow"></i> Interactive Data Visualizations</h6>
+                <div class="row g-3 mt-2">
+                    <div class="col-md-6">
+                        <div class="glass-card p-3">
+                            <h6 class="text-center mb-3">Metric Distributions (Mean Values)</h6>
+                            <canvas id="metricsBarChart" style="max-height: 300px;"></canvas>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="glass-card p-3">
+                            <h6 class="text-center mb-3">Variability Analysis (Std Dev)</h6>
+                            <canvas id="variabilityChart" style="max-height: 300px;"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="row g-3 mt-2">
+                    <div class="col-md-12">
+                        <div class="glass-card p-3">
+                            <h6 class="text-center mb-3">Range Analysis (Min-Max)</h6>
+                            <canvas id="rangeChart" style="max-height: 300px;"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
     }
 
     const html = `
-        <div class="glass-card" id="resultsCard">
+        <div class="glass-card position-relative" id="resultsCard">
+            <button class="btn btn-sm btn-outline-danger position-absolute"
+                    style="top: 10px; right: 10px; z-index: 10;"
+                    onclick="closeResultsCard()"
+                    title="Close preview">
+                <i class="bi bi-x-lg"></i>
+            </button>
             <div class="card-body">
                 <div class="alert alert-success alert-fancy mb-0">
                     <h5><i class="bi bi-check-circle-fill"></i> Generation Complete!</h5>
@@ -892,16 +1043,239 @@ function showResult(data) {
                     </div>
                     ${previewHtml}
                     ${statsHtml}
+                    ${chartDataHtml}
                 </div>
             </div>
         </div>
     `;
     document.getElementById('statusContainer').innerHTML = html;
 
+    // Create charts if statistics exist
+    if (data.statistics && Object.keys(data.statistics).length > 0) {
+        createCharts(data.statistics);
+    }
+
     // Scroll to results
     setTimeout(() => {
         document.getElementById('resultsCard').scrollIntoView({ behavior: 'smooth', block: 'center' });
     }, 100);
+}
+
+// Close results card
+function closeResultsCard() {
+    const card = document.getElementById('resultsCard');
+    if (card) {
+        card.style.transition = 'opacity 0.3s ease-out';
+        card.style.opacity = '0';
+        setTimeout(() => {
+            card.remove();
+        }, 300);
+    }
+}
+
+// Create interactive charts
+function createCharts(statistics) {
+    const metrics = Object.keys(statistics);
+    const means = metrics.map(m => statistics[m].mean);
+    const stds = metrics.map(m => statistics[m].std);
+    const mins = metrics.map(m => statistics[m].min);
+    const maxs = metrics.map(m => statistics[m].max);
+
+    // Chart colors
+    const colors = [
+        'rgba(59, 130, 246, 0.8)',  // blue
+        'rgba(16, 185, 129, 0.8)',  // green
+        'rgba(249, 115, 22, 0.8)',  // orange
+        'rgba(139, 92, 246, 0.8)',  // purple
+        'rgba(236, 72, 153, 0.8)',  // pink
+        'rgba(245, 158, 11, 0.8)',  // amber
+    ];
+
+    // Bar Chart - Mean Values
+    const barCtx = document.getElementById('metricsBarChart');
+    if (barCtx) {
+        new Chart(barCtx, {
+            type: 'bar',
+            data: {
+                labels: metrics,
+                datasets: [{
+                    label: 'Mean Value',
+                    data: means,
+                    backgroundColor: colors,
+                    borderColor: colors.map(c => c.replace('0.8', '1')),
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return 'Mean: ' + context.parsed.y.toFixed(2);
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.1)'
+                        },
+                        ticks: {
+                            color: '#fff'
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        },
+                        ticks: {
+                            color: '#fff',
+                            maxRotation: 45,
+                            minRotation: 45
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    // Radar Chart - Variability
+    const radarCtx = document.getElementById('variabilityChart');
+    if (radarCtx) {
+        new Chart(radarCtx, {
+            type: 'radar',
+            data: {
+                labels: metrics,
+                datasets: [{
+                    label: 'Standard Deviation',
+                    data: stds,
+                    backgroundColor: 'rgba(59, 130, 246, 0.2)',
+                    borderColor: 'rgba(59, 130, 246, 1)',
+                    borderWidth: 2,
+                    pointBackgroundColor: 'rgba(59, 130, 246, 1)',
+                    pointBorderColor: '#fff',
+                    pointHoverBackgroundColor: '#fff',
+                    pointHoverBorderColor: 'rgba(59, 130, 246, 1)'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    r: {
+                        beginAtZero: true,
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.1)'
+                        },
+                        angleLines: {
+                            color: 'rgba(255, 255, 255, 0.1)'
+                        },
+                        ticks: {
+                            color: '#fff',
+                            backdropColor: 'transparent'
+                        },
+                        pointLabels: {
+                            color: '#fff',
+                            font: {
+                                size: 11
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    // Line Chart - Range (Min-Max)
+    const rangeCtx = document.getElementById('rangeChart');
+    if (rangeCtx) {
+        new Chart(rangeCtx, {
+            type: 'line',
+            data: {
+                labels: metrics,
+                datasets: [
+                    {
+                        label: 'Maximum',
+                        data: maxs,
+                        borderColor: 'rgba(239, 68, 68, 1)',
+                        backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                        fill: false,
+                        tension: 0.4,
+                        borderWidth: 2,
+                        pointRadius: 4
+                    },
+                    {
+                        label: 'Mean',
+                        data: means,
+                        borderColor: 'rgba(59, 130, 246, 1)',
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        fill: false,
+                        tension: 0.4,
+                        borderWidth: 2,
+                        pointRadius: 4
+                    },
+                    {
+                        label: 'Minimum',
+                        data: mins,
+                        borderColor: 'rgba(16, 185, 129, 1)',
+                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                        fill: false,
+                        tension: 0.4,
+                        borderWidth: 2,
+                        pointRadius: 4
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'top',
+                        labels: {
+                            color: '#fff',
+                            usePointStyle: true,
+                            padding: 15
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.1)'
+                        },
+                        ticks: {
+                            color: '#fff'
+                        }
+                    },
+                    x: {
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.1)'
+                        },
+                        ticks: {
+                            color: '#fff',
+                            maxRotation: 45,
+                            minRotation: 45
+                        }
+                    }
+                }
+            }
+        });
+    }
 }
 
 // Helper function to format values in preview table
