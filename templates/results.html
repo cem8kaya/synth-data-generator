@@ -1,0 +1,420 @@
+{% extends "base.html" %}
+
+{% block title %}Generation Results{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <!-- Header -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h3 class="mb-1">
+                            <i class="bi bi-check-circle-fill text-success"></i> 
+                            Data Generated Successfully
+                        </h3>
+                        <p class="text-muted mb-0">Session ID: <code>{{ session_id }}</code></p>
+                    </div>
+                    <div>
+                        <a href="{{ url_for('main.index') }}" class="btn btn-primary">
+                            <i class="bi bi-arrow-left"></i> New Generation
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Loading Indicator -->
+        <div id="loadingIndicator" class="text-center my-5">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <p class="mt-3">Loading results...</p>
+        </div>
+
+        <!-- Results Container -->
+        <div id="resultsContainer" style="display: none;">
+            <!-- Statistics Cards -->
+            <div class="row mb-4">
+                <div class="col-md-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h5 class="text-muted">Total Rows</h5>
+                            <h2 id="totalRows" class="mb-0">-</h2>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h5 class="text-muted">Columns</h5>
+                            <h2 id="totalColumns" class="mb-0">-</h2>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h5 class="text-muted">Quality Score</h5>
+                            <h2 id="qualityScore" class="mb-0">-</h2>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h5 class="text-muted">Completeness</h5>
+                            <h2 id="completeness" class="mb-0">-</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Download Section -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-download"></i> Download Data</h5>
+                </div>
+                <div class="card-body">
+                    <div class="btn-group w-100" role="group">
+                        <a href="/api/download/{{ session_id }}/csv" class="btn btn-outline-primary">
+                            <i class="bi bi-file-earmark-spreadsheet"></i> CSV
+                        </a>
+                        <a href="/api/download/{{ session_id }}/parquet" class="btn btn-outline-primary">
+                            <i class="bi bi-file-earmark-binary"></i> Parquet
+                        </a>
+                        <a href="/api/download/{{ session_id }}/json" class="btn btn-outline-primary">
+                            <i class="bi bi-file-earmark-code"></i> JSON
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Metrics Selector -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-bar-chart-line"></i> Visualizations</h5>
+                </div>
+                <div class="card-body">
+                    <label class="form-label">Select Metric to Visualize:</label>
+                    <select class="form-select" id="metricSelector">
+                        <option value="">-- Select Metric --</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Visualization Container -->
+            <div id="visualizationContainer" style="display: none;">
+                <!-- Time Series Chart -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="bi bi-graph-up"></i> Time Series</h5>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="timeSeriesChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Statistics and Histogram -->
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <div class="card h-100">
+                            <div class="card-header">
+                                <h5 class="mb-0"><i class="bi bi-calculator"></i> Statistics</h5>
+                            </div>
+                            <div class="card-body">
+                                <table class="table table-sm">
+                                    <tbody id="statsTable">
+                                        <!-- Stats will be populated here -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card h-100">
+                            <div class="card-header">
+                                <h5 class="mb-0"><i class="bi bi-bar-chart"></i> Distribution</h5>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="histogramChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Data Preview -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-table"></i> Data Preview (First 100 rows)</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-sm table-striped" id="previewTable">
+                            <thead id="previewTableHead"></thead>
+                            <tbody id="previewTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+let timeSeriesChart = null;
+let histogramChart = null;
+
+// Load results on page load
+document.addEventListener('DOMContentLoaded', async function() {
+    const sessionId = '{{ session_id }}';
+    await loadResults(sessionId);
+});
+
+async function loadResults(sessionId) {
+    try {
+        // Load generation results
+        const cacheKey = `generation_${sessionId}`;
+        let data = JSON.parse(sessionStorage.getItem(cacheKey));
+        
+        if (!data) {
+            const response = await axios.get(`/api/data/${sessionId}`);
+            data = response.data;
+        }
+        
+        // Check if we have full generation data in sessionStorage
+        const fullData = JSON.parse(sessionStorage.getItem(`full_${sessionId}`));
+        if (fullData) {
+            displayResults(fullData);
+        } else {
+            // Show basic info
+            document.getElementById('loadingIndicator').style.display = 'none';
+            document.getElementById('resultsContainer').style.display = 'block';
+            
+            showBasicInfo(data);
+        }
+        
+    } catch (error) {
+        console.error('Error loading results:', error);
+        document.getElementById('loadingIndicator').innerHTML = `
+            <div class="alert alert-danger">
+                <strong>Error:</strong> Failed to load results. ${error.message}
+            </div>
+        `;
+    }
+}
+
+function displayResults(data) {
+    document.getElementById('loadingIndicator').style.display = 'none';
+    document.getElementById('resultsContainer').style.display = 'block';
+    
+    // Display statistics
+    document.getElementById('totalRows').textContent = data.total_rows.toLocaleString();
+    document.getElementById('totalColumns').textContent = data.total_columns;
+    document.getElementById('qualityScore').textContent = (data.quality.overall_quality * 100).toFixed(1) + '%';
+    document.getElementById('completeness').textContent = (data.quality.completeness * 100).toFixed(1) + '%';
+    
+    // Populate metrics selector
+    const metricSelector = document.getElementById('metricSelector');
+    data.columns.forEach(col => {
+        if (!['timestamp', 'hour', 'day_of_week', 'day_of_month', 'is_weekend', 'is_business_hours'].includes(col)) {
+            const option = document.createElement('option');
+            option.value = col;
+            option.textContent = col;
+            metricSelector.appendChild(option);
+        }
+    });
+    
+    // Add event listener for metric selector
+    metricSelector.addEventListener('change', async function() {
+        if (this.value) {
+            await visualizeMetric(this.value);
+        }
+    });
+    
+    // Display data preview
+    displayDataPreview(data.preview_data, data.columns);
+    
+    // Cache full data
+    sessionStorage.setItem(`full_{{ session_id }}`, JSON.stringify(data));
+}
+
+function showBasicInfo(data) {
+    // Show what we have
+    document.getElementById('totalRows').textContent = '...';
+    document.getElementById('totalColumns').textContent = data.columns?.length || '...';
+    document.getElementById('qualityScore').textContent = '...';
+    document.getElementById('completeness').textContent = '...';
+    
+    // Populate metrics selector even with basic info
+    if (data.columns) {
+        const metricSelector = document.getElementById('metricSelector');
+        data.columns.forEach(col => {
+            if (!['timestamp', 'hour', 'day_of_week', 'day_of_month', 'is_weekend', 'is_business_hours'].includes(col)) {
+                const option = document.createElement('option');
+                option.value = col;
+                option.textContent = col;
+                metricSelector.appendChild(option);
+            }
+        });
+        
+        // Add event listener for metric selector
+        metricSelector.addEventListener('change', async function() {
+            if (this.value) {
+                await visualizeMetric(this.value);
+            }
+        });
+    }
+    
+    if (data.sample_data && data.columns) {
+        displayDataPreview(data.sample_data, data.columns);
+    }
+}
+
+async function visualizeMetric(metricName) {
+    const sessionId = '{{ session_id }}';
+    
+    try {
+        const response = await axios.get(`/api/visualize/${sessionId}/${metricName}`);
+        const data = response.data;
+        
+        document.getElementById('visualizationContainer').style.display = 'block';
+        
+        // Display time series
+        displayTimeSeries(data.time_series, metricName);
+        
+        // Display statistics
+        displayStatistics(data.statistics);
+        
+        // Display histogram
+        displayHistogram(data.histogram, metricName);
+        
+    } catch (error) {
+        console.error('Error visualizing metric:', error);
+    }
+}
+
+function displayTimeSeries(timeSeriesData, metricName) {
+    const ctx = document.getElementById('timeSeriesChart').getContext('2d');
+    
+    if (timeSeriesChart) {
+        timeSeriesChart.destroy();
+    }
+    
+    timeSeriesChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: timeSeriesData.timestamps,
+            datasets: [{
+                label: metricName,
+                data: timeSeriesData.values,
+                borderColor: 'rgb(13, 110, 253)',
+                backgroundColor: 'rgba(13, 110, 253, 0.1)',
+                tension: 0.3
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    display: true
+                }
+            },
+            scales: {
+                x: {
+                    display: false
+                },
+                y: {
+                    beginAtZero: false
+                }
+            }
+        }
+    });
+}
+
+function displayStatistics(stats) {
+    const table = document.getElementById('statsTable');
+    table.innerHTML = `
+        <tr><th>Mean</th><td>${stats.mean.toFixed(4)}</td></tr>
+        <tr><th>Std Dev</th><td>${stats.std.toFixed(4)}</td></tr>
+        <tr><th>Min</th><td>${stats.min.toFixed(4)}</td></tr>
+        <tr><th>Max</th><td>${stats.max.toFixed(4)}</td></tr>
+        <tr><th>Median</th><td>${stats.median.toFixed(4)}</td></tr>
+    `;
+}
+
+function displayHistogram(histogramData, metricName) {
+    const ctx = document.getElementById('histogramChart').getContext('2d');
+    
+    if (histogramChart) {
+        histogramChart.destroy();
+    }
+    
+    // Prepare labels (bin centers)
+    const labels = histogramData.bins.slice(0, -1).map((b, i) => {
+        const center = (b + histogramData.bins[i + 1]) / 2;
+        return center.toFixed(2);
+    });
+    
+    histogramChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Frequency',
+                data: histogramData.counts,
+                backgroundColor: 'rgba(13, 110, 253, 0.6)',
+                borderColor: 'rgb(13, 110, 253)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                x: {
+                    title: {
+                        display: true,
+                        text: metricName
+                    }
+                },
+                y: {
+                    title: {
+                        display: true,
+                        text: 'Count'
+                    },
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+}
+
+function displayDataPreview(previewData, columns) {
+    const thead = document.getElementById('previewTableHead');
+    const tbody = document.getElementById('previewTableBody');
+    
+    // Create headers
+    thead.innerHTML = '<tr>' + columns.map(col => `<th>${col}</th>`).join('') + '</tr>';
+    
+    // Create rows
+    tbody.innerHTML = previewData.map(row => {
+        return '<tr>' + columns.map(col => {
+            let value = row[col];
+            if (typeof value === 'number') {
+                value = value.toFixed(4);
+            }
+            return `<td>${value}</td>`;
+        }).join('') + '</tr>';
+    }).join('');
+}
+</script>
+{% endblock %}

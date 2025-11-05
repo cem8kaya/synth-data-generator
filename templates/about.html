@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About - Generic Synthetic Data Generator</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="/static/style.css" rel="stylesheet">
+</head>
+<body>
+    <div class="main-container">
+        <!-- Header -->
+        <div class="header">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1><i class="bi bi-info-circle"></i> About Generic Synthetic Data Generator</h1>
+                    <p class="subtitle">Multi-Domain Time-Series Data Generation System</p>
+                </div>
+                <button class="btn btn-sm btn-outline-light" onclick="window.location.href='/'">
+                    <i class="bi bi-house"></i> Home
+                </button>
+            </div>
+        </div>
+
+        <!-- Overview -->
+        <div class="card">
+            <div class="card-header">
+                <i class="bi bi-bookmark"></i> Overview
+            </div>
+            <div class="card-body">
+                <p>The <strong>Generic Synthetic Data Generator</strong> is a domain-agnostic system for generating realistic synthetic time-series data with configurable patterns, correlations, anomalies, and temporal dynamics.</p>
+                
+                <p>Version 2.0 has been completely refactored from a telecom-specific tool into a multi-domain platform that supports:</p>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <ul>
+                            <li>Telecommunications</li>
+                            <li>Financial Services</li>
+                            <li>Healthcare</li>
+                            <li>Manufacturing</li>
+                            <li>E-commerce</li>
+                            <li>IoT/Sensors</li>
+                            <li>Custom Domains</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="alert alert-info">
+                            <strong>Key Features:</strong>
+                            <ul class="mb-0">
+                                <li>6+ pre-built domain templates</li>
+                                <li>7 probability distributions</li>
+                                <li>Correlation modeling</li>
+                                <li>Temporal patterns</li>
+                                <li>Anomaly injection</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Supported Domains -->
+        <div class="card">
+            <div class="card-header">
+                <i class="bi bi-grid-3x3"></i> Supported Domains
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h6><i class="bi bi-broadcast"></i> Telecommunications</h6>
+                                <p class="small">Network performance, call data, latency metrics</p>
+                                <p class="small text-muted"><strong>Use Cases:</strong> Network monitoring, capacity planning, QoS analysis</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h6><i class="bi bi-currency-dollar"></i> Financial Services</h6>
+                                <p class="small">Trading systems, transactions, market data</p>
+                                <p class="small text-muted"><strong>Use Cases:</strong> Trading analytics, risk management, backtesting</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h6><i class="bi bi-heart-pulse"></i> Healthcare</h6>
+                                <p class="small">Patient data, bed occupancy, operations</p>
+                                <p class="small text-muted"><strong>Use Cases:</strong> Resource optimization, patient flow, capacity planning</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h6><i class="bi bi-gear"></i> Manufacturing</h6>
+                                <p class="small">Production metrics, quality data, cycle times</p>
+                                <p class="small text-muted"><strong>Use Cases:</strong> Production optimization, quality control, predictive maintenance</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h6><i class="bi bi-cart"></i> E-commerce</h6>
+                                <p class="small">Web traffic, conversions, revenue metrics</p>
+                                <p class="small text-muted"><strong>Use Cases:</strong> Marketing analytics, customer behavior, A/B testing</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h6><i class="bi bi-thermometer"></i> IoT/Sensors</h6>
+                                <p class="small">Sensor data, environmental metrics, device health</p>
+                                <p class="small text-muted"><strong>Use Cases:</strong> Smart cities, environmental monitoring, asset tracking</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Features -->
+        <div class="card">
+            <div class="card-header">
+                <i class="bi bi-star"></i> Key Features
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>Statistical Foundation</h6>
+                        <ul>
+                            <li><strong>Normal Distribution:</strong> General-purpose metrics</li>
+                            <li><strong>Gamma Distribution:</strong> Latency, delays, processing times</li>
+                            <li><strong>Lognormal Distribution:</strong> Throughput, revenue, data volume</li>
+                            <li><strong>Beta Distribution:</strong> Rates, percentages, success rates</li>
+                            <li><strong>Poisson Distribution:</strong> Event counts, arrivals</li>
+                            <li><strong>Exponential Distribution:</strong> Wait times, inter-arrival times</li>
+                            <li><strong>Uniform Distribution:</strong> Random values in range</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Advanced Capabilities</h6>
+                        <ul>
+                            <li><strong>Correlation Modeling:</strong> Gaussian copula-based correlation preservation</li>
+                            <li><strong>Seasonality:</strong> Daily, weekly, and custom periodic patterns</li>
+                            <li><strong>ARIMA Smoothing:</strong> Temporal coherence and autocorrelation</li>
+                            <li><strong>Change Points:</strong> System upgrades, configuration changes</li>
+                            <li><strong>Anomaly Injection:</strong> Spikes, drops, outages, degradation</li>
+                            <li><strong>Multi-Entity Systems:</strong> Complex dependencies between components</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Architecture -->
+        <div class="card">
+            <div class="card-header">
+                <i class="bi bi-diagram-3"></i> System Architecture
+            </div>
+            <div class="card-body">
+                <div class="alert alert-secondary">
+                    <pre class="mb-0">
+┌─────────────────────────────────────┐
+│   Domain Templates Layer            │
+│   (Telecom|Finance|Healthcare|...)  │
+├─────────────────────────────────────┤
+│   Generic Configuration Layer       │
+│   (Entities, Metrics, Schemas)      │
+├─────────────────────────────────────┤
+│   Core Generation Engine            │
+│   (Distributions, Correlations)     │
+├─────────────────────────────────────┤
+│   Infrastructure Layer              │
+│   (API, Storage, Validation)        │
+└─────────────────────────────────────┘
+                    </pre>
+                </div>
+
+                <h6>Layer Description:</h6>
+                <ul>
+                    <li><strong>Domain Templates:</strong> Pre-configured industry-specific setups</li>
+                    <li><strong>Configuration:</strong> Generic schemas for entities, metrics, patterns</li>
+                    <li><strong>Core Engine:</strong> Statistical generation, correlation, temporal processing</li>
+                    <li><strong>Infrastructure:</strong> REST API, file I/O, validation framework</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Technical Details -->
+        <div class="card">
+            <div class="card-header">
+                <i class="bi bi-cpu"></i> Technical Specifications
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>Performance</h6>
+                        <table class="table table-sm">
+                            <tr>
+                                <td>Generation Speed</td>
+                                <td><strong>~1,000 windows/min</strong></td>
+                            </tr>
+                            <tr>
+                                <td>Memory Usage</td>
+                                <td><strong>&lt;2 GB</strong></td>
+                            </tr>
+                            <tr>
+                                <td>Startup Time</td>
+                                <td><strong>&lt;2 seconds</strong></td>
+                            </tr>
+                            <tr>
+                                <td>API Response</td>
+                                <td><strong>&lt;100ms</strong> (excluding generation)</td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Technology Stack</h6>
+                        <ul>
+                            <li><strong>Backend:</strong> Python 3.8+, Flask</li>
+                            <li><strong>Data Processing:</strong> NumPy, Pandas, SciPy</li>
+                            <li><strong>Frontend:</strong> Bootstrap 5, Vanilla JS</li>
+                            <li><strong>Output Formats:</strong> CSV, Parquet, JSON</li>
+                            <li><strong>API:</strong> RESTful HTTP/JSON</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- API Endpoints -->
+        <div class="card">
+            <div class="card-header">
+                <i class="bi bi-code-square"></i> API Endpoints
+            </div>
+            <div class="card-body">
+                <table class="table table-sm">
+                    <thead>
+                        <tr>
+                            <th>Method</th>
+                            <th>Endpoint</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><span class="badge bg-success">GET</span></td>
+                            <td><code>/api/templates</code></td>
+                            <td>List all available domain templates</td>
+                        </tr>
+                        <tr>
+                            <td><span class="badge bg-success">GET</span></td>
+                            <td><code>/api/template/&lt;domain&gt;</code></td>
+                            <td>Get specific domain template</td>
+                        </tr>
+                        <tr>
+                            <td><span class="badge bg-primary">POST</span></td>
+                            <td><code>/api/generate</code></td>
+                            <td>Generate synthetic data</td>
+                        </tr>
+                        <tr>
+                            <td><span class="badge bg-primary">POST</span></td>
+                            <td><code>/api/validate</code></td>
+                            <td>Validate configuration</td>
+                        </tr>
+                        <tr>
+                            <td><span class="badge bg-success">GET</span></td>
+                            <td><code>/api/health</code></td>
+                            <td>Health check</td>
+                        </tr>
+                        <tr>
+                            <td><span class="badge bg-success">GET</span></td>
+                            <td><code>/api/info</code></td>
+                            <td>System information</td>
+                        </tr>
+                        <tr>
+                            <td><span class="badge bg-success">GET</span></td>
+                            <td><code>/api/download/&lt;filename&gt;</code></td>
+                            <td>Download generated file</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Version History -->
+        <div class="card">
+            <div class="card-header">
+                <i class="bi bi-clock-history"></i> Version History
+            </div>
+            <div class="card-body">
+                <table class="table table-sm">
+                    <thead>
+                        <tr>
+                            <th>Version</th>
+                            <th>Date</th>
+                            <th>Changes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>2.0.0</strong></td>
+                            <td>2025-01</td>
+                            <td>
+                                <ul class="mb-0">
+                                    <li>Complete refactoring to generic/domain-agnostic system</li>
+                                    <li>Added 6 domain templates</li>
+                                    <li>New template selection UI</li>
+                                    <li>Enhanced API with validation</li>
+                                    <li>Improved documentation</li>
+                                </ul>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>1.0.0</td>
+                            <td>2024</td>
+                            <td>
+                                <ul class="mb-0">
+                                    <li>Initial release (telecom-specific)</li>
+                                    <li>Basic generation capabilities</li>
+                                    <li>Web interface</li>
+                                </ul>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Documentation -->
+        <div class="card">
+            <div class="card-header">
+                <i class="bi bi-book"></i> Documentation
+            </div>
+            <div class="card-body">
+                <p>Comprehensive documentation is available:</p>
+                <ul>
+                    <li><strong>README_GENERIC.md</strong> - Main user guide with examples</li>
+                    <li><strong>MIGRATION_GUIDE.md</strong> - For users migrating from v1.0</li>
+                    <li><strong>IMPLEMENTATION_GUIDE.md</strong> - Quick start and setup</li>
+                    <li><strong>API Documentation</strong> - Available at <code>/api/info</code></li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="text-center text-muted mt-4 pb-3">
+            <small>
+                Generic Synthetic Data Generator v2.0 | 
+                <a href="/">Home</a> | 
+                <a href="/results">Results</a> | 
+                <a href="https://github.com/your-org/synth-generator" target="_blank">GitHub</a>
+            </small>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

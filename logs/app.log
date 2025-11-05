@@ -1,0 +1,338 @@
+2025-10-24 17:42:43,491 - app - INFO - ======================================================================
+2025-10-24 17:42:43,491 - app - INFO - Telecom Synthetic Data Generator Web UI Started
+2025-10-24 17:42:43,491 - app - INFO - Configuration: development
+2025-10-24 17:42:43,491 - app - INFO - Debug mode: True
+2025-10-24 17:42:43,491 - app - INFO - ======================================================================
+2025-10-24 17:42:45,517 - app - INFO - ======================================================================
+2025-10-24 17:42:45,517 - app - INFO - Telecom Synthetic Data Generator Web UI Started
+2025-10-24 17:42:45,517 - app - INFO - Configuration: development
+2025-10-24 17:42:45,517 - app - INFO - Debug mode: True
+2025-10-24 17:42:45,517 - app - INFO - ======================================================================
+2025-10-24 17:44:49,997 - app - ERROR - Generation error: Invalid comparison between dtype=datetime64[ns] and datetime
+Traceback (most recent call last):
+  File "C:\Users\cem.kaya\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\pandas\core\arrays\datetimelike.py", line 559, in _validate_comparison_value
+    self._check_compatible_with(other)
+  File "C:\Users\cem.kaya\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\pandas\core\arrays\datetimes.py", line 542, in _check_compatible_with
+    self._assert_tzawareness_compat(other)
+  File "C:\Users\cem.kaya\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\pandas\core\arrays\datetimes.py", line 784, in _assert_tzawareness_compat
+    raise TypeError(
+TypeError: Cannot compare tz-naive and tz-aware datetime-like objects.
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\cem.kaya\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\pandas\core\arrays\datetimelike.py", line 1006, in _cmp_method
+    other = self._validate_comparison_value(other)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\cem.kaya\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\pandas\core\arrays\datetimelike.py", line 562, in _validate_comparison_value
+    raise InvalidComparison(other) from err
+pandas.errors.InvalidComparison: 2025-10-26 14:44:00+00:00
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\cem.kaya\OneDrive - Odine Solutions\Documents\CustomerProjects\telecom_synth_generator\telecom-web-generator\telecom-web-generator\routes\api.py", line 48, in generate_data
+    df = orchestrator.generate()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\cem.kaya\OneDrive - Odine Solutions\Documents\CustomerProjects\telecom_synth_generator\telecom-web-generator\telecom-web-generator\generator\core.py", line 197, in generate
+    data = self._inject_anomalies(data, metric.name)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\cem.kaya\OneDrive - Odine Solutions\Documents\CustomerProjects\telecom_synth_generator\telecom-web-generator\telecom-web-generator\generator\core.py", line 171, in _inject_anomalies
+    result = self.anomaly_injector.inject_anomaly(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\cem.kaya\OneDrive - Odine Solutions\Documents\CustomerProjects\telecom_synth_generator\telecom-web-generator\telecom-web-generator\generator\anomaly.py", line 48, in inject_anomaly
+    mask = (timestamps >= config.start_time) & (timestamps < config.get_end_time())
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\cem.kaya\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\pandas\core\ops\common.py", line 76, in new_method
+    return method(self, other)
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\cem.kaya\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\pandas\core\arraylike.py", line 60, in __ge__
+    return self._cmp_method(other, operator.ge)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\cem.kaya\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\pandas\core\indexes\base.py", line 7225, in _cmp_method
+    result = op(self._values, other)
+             ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\cem.kaya\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\pandas\core\ops\common.py", line 76, in new_method
+    return method(self, other)
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\cem.kaya\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\pandas\core\arraylike.py", line 60, in __ge__
+    return self._cmp_method(other, operator.ge)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\cem.kaya\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\pandas\core\arrays\datetimelike.py", line 1008, in _cmp_method
+    return invalid_comparison(self, other, op)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\cem.kaya\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\pandas\core\ops\invalid.py", line 40, in invalid_comparison
+    raise TypeError(f"Invalid comparison between dtype={left.dtype} and {typ}")
+TypeError: Invalid comparison between dtype=datetime64[ns] and datetime
+
+2025-10-24 17:47:56,217 - app - INFO - ======================================================================
+2025-10-24 17:47:56,217 - app - INFO - Telecom Synthetic Data Generator Web UI Started
+2025-10-24 17:47:56,217 - app - INFO - Configuration: development
+2025-10-24 17:47:56,217 - app - INFO - Debug mode: True
+2025-10-24 17:47:56,217 - app - INFO - ======================================================================
+2025-10-24 17:47:58,094 - app - INFO - ======================================================================
+2025-10-24 17:47:58,095 - app - INFO - Telecom Synthetic Data Generator Web UI Started
+2025-10-24 17:47:58,095 - app - INFO - Configuration: development
+2025-10-24 17:47:58,096 - app - INFO - Debug mode: True
+2025-10-24 17:47:58,096 - app - INFO - ======================================================================
+2025-10-24 17:48:13,912 - app - ERROR - Generation error: Object of type int64 is not JSON serializable
+Traceback (most recent call last):
+  File "C:\Users\cem.kaya\OneDrive - Odine Solutions\Documents\CustomerProjects\telecom_synth_generator\telecom-web-generator\telecom-web-generator\routes\api.py", line 73, in generate_data
+    return jsonify({
+           ^^^^^^^^^
+  File "C:\Users\cem.kaya\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\flask\json\__init__.py", line 170, in jsonify
+    return current_app.json.response(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\cem.kaya\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\flask\json\provider.py", line 215, in response
+    f"{self.dumps(obj, **dump_args)}\n", mimetype=self.mimetype
+       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\cem.kaya\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\flask\json\provider.py", line 180, in dumps
+    return json.dumps(obj, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.11_3.11.2544.0_x64__qbz5n2kfra8p0\Lib\json\__init__.py", line 238, in dumps
+    **kw).encode(obj)
+          ^^^^^^^^^^^
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.11_3.11.2544.0_x64__qbz5n2kfra8p0\Lib\json\encoder.py", line 202, in encode
+    chunks = list(chunks)
+             ^^^^^^^^^^^^
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.11_3.11.2544.0_x64__qbz5n2kfra8p0\Lib\json\encoder.py", line 432, in _iterencode
+    yield from _iterencode_dict(o, _current_indent_level)
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.11_3.11.2544.0_x64__qbz5n2kfra8p0\Lib\json\encoder.py", line 406, in _iterencode_dict
+    yield from chunks
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.11_3.11.2544.0_x64__qbz5n2kfra8p0\Lib\json\encoder.py", line 406, in _iterencode_dict
+    yield from chunks
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.11_3.11.2544.0_x64__qbz5n2kfra8p0\Lib\json\encoder.py", line 439, in _iterencode
+    o = _default(o)
+        ^^^^^^^^^^^
+  File "C:\Users\cem.kaya\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\flask\json\provider.py", line 120, in _default
+    raise TypeError(f"Object of type {type(o).__name__} is not JSON serializable")
+TypeError: Object of type int64 is not JSON serializable
+
+2025-10-24 17:49:23,836 - app - INFO - ======================================================================
+2025-10-24 17:49:23,836 - app - INFO - Telecom Synthetic Data Generator Web UI Started
+2025-10-24 17:49:23,836 - app - INFO - Configuration: development
+2025-10-24 17:49:23,836 - app - INFO - Debug mode: True
+2025-10-24 17:49:23,836 - app - INFO - ======================================================================
+2025-10-24 17:49:25,708 - app - INFO - ======================================================================
+2025-10-24 17:49:25,709 - app - INFO - Telecom Synthetic Data Generator Web UI Started
+2025-10-24 17:49:25,709 - app - INFO - Configuration: development
+2025-10-24 17:49:25,709 - app - INFO - Debug mode: True
+2025-10-24 17:49:25,710 - app - INFO - ======================================================================
+2025-10-24 17:49:33,769 - app - ERROR - Generation error: Object of type int64 is not JSON serializable
+Traceback (most recent call last):
+  File "C:\Users\cem.kaya\OneDrive - Odine Solutions\Documents\CustomerProjects\telecom_synth_generator\telecom-web-generator\telecom-web-generator\routes\api.py", line 73, in generate_data
+    return jsonify({
+           ^^^^^^^^^
+  File "C:\Users\cem.kaya\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\flask\json\__init__.py", line 170, in jsonify
+    return current_app.json.response(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\cem.kaya\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\flask\json\provider.py", line 215, in response
+    f"{self.dumps(obj, **dump_args)}\n", mimetype=self.mimetype
+       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\cem.kaya\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\flask\json\provider.py", line 180, in dumps
+    return json.dumps(obj, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.11_3.11.2544.0_x64__qbz5n2kfra8p0\Lib\json\__init__.py", line 238, in dumps
+    **kw).encode(obj)
+          ^^^^^^^^^^^
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.11_3.11.2544.0_x64__qbz5n2kfra8p0\Lib\json\encoder.py", line 202, in encode
+    chunks = list(chunks)
+             ^^^^^^^^^^^^
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.11_3.11.2544.0_x64__qbz5n2kfra8p0\Lib\json\encoder.py", line 432, in _iterencode
+    yield from _iterencode_dict(o, _current_indent_level)
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.11_3.11.2544.0_x64__qbz5n2kfra8p0\Lib\json\encoder.py", line 406, in _iterencode_dict
+    yield from chunks
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.11_3.11.2544.0_x64__qbz5n2kfra8p0\Lib\json\encoder.py", line 406, in _iterencode_dict
+    yield from chunks
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.11_3.11.2544.0_x64__qbz5n2kfra8p0\Lib\json\encoder.py", line 439, in _iterencode
+    o = _default(o)
+        ^^^^^^^^^^^
+  File "C:\Users\cem.kaya\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\flask\json\provider.py", line 120, in _default
+    raise TypeError(f"Object of type {type(o).__name__} is not JSON serializable")
+TypeError: Object of type int64 is not JSON serializable
+
+2025-10-24 17:56:15,133 - app - INFO - ======================================================================
+2025-10-24 17:56:15,134 - app - INFO - Telecom Synthetic Data Generator Web UI Started
+2025-10-24 17:56:15,134 - app - INFO - Configuration: development
+2025-10-24 17:56:15,134 - app - INFO - Debug mode: True
+2025-10-24 17:56:15,134 - app - INFO - ======================================================================
+2025-10-24 17:56:35,725 - app - INFO - ======================================================================
+2025-10-24 17:56:35,726 - app - INFO - Telecom Synthetic Data Generator Web UI Started
+2025-10-24 17:56:35,726 - app - INFO - Configuration: development
+2025-10-24 17:56:35,727 - app - INFO - Debug mode: True
+2025-10-24 17:56:35,727 - app - INFO - ======================================================================
+2025-10-24 17:56:42,793 - app - INFO - ======================================================================
+2025-10-24 17:56:42,793 - app - INFO - Telecom Synthetic Data Generator Web UI Started
+2025-10-24 17:56:42,793 - app - INFO - Configuration: development
+2025-10-24 17:56:42,793 - app - INFO - Debug mode: True
+2025-10-24 17:56:42,793 - app - INFO - ======================================================================
+2025-10-24 17:56:44,760 - app - INFO - ======================================================================
+2025-10-24 17:56:44,760 - app - INFO - Telecom Synthetic Data Generator Web UI Started
+2025-10-24 17:56:44,760 - app - INFO - Configuration: development
+2025-10-24 17:56:44,760 - app - INFO - Debug mode: True
+2025-10-24 17:56:44,760 - app - INFO - ======================================================================
+2025-10-24 18:01:52,415 - app - INFO - ======================================================================
+2025-10-24 18:01:52,415 - app - INFO - Telecom Synthetic Data Generator Web UI Started
+2025-10-24 18:01:52,415 - app - INFO - Configuration: development
+2025-10-24 18:01:52,415 - app - INFO - Debug mode: True
+2025-10-24 18:01:52,415 - app - INFO - ======================================================================
+2025-10-24 18:01:54,007 - app - INFO - ======================================================================
+2025-10-24 18:01:54,008 - app - INFO - Telecom Synthetic Data Generator Web UI Started
+2025-10-24 18:01:54,008 - app - INFO - Configuration: development
+2025-10-24 18:01:54,009 - app - INFO - Debug mode: True
+2025-10-24 18:01:54,009 - app - INFO - ======================================================================
+2025-10-24 18:39:21,398 - app - INFO - ======================================================================
+2025-10-24 18:39:21,398 - app - INFO - Telecom Synthetic Data Generator Web UI Started
+2025-10-24 18:39:21,398 - app - INFO - Configuration: development
+2025-10-24 18:39:21,400 - app - INFO - Debug mode: True
+2025-10-24 18:39:21,400 - app - INFO - ======================================================================
+2025-10-24 18:39:22,810 - app - INFO - ======================================================================
+2025-10-24 18:39:22,810 - app - INFO - Telecom Synthetic Data Generator Web UI Started
+2025-10-24 18:39:22,811 - app - INFO - Configuration: development
+2025-10-24 18:39:22,811 - app - INFO - Debug mode: True
+2025-10-24 18:39:22,811 - app - INFO - ======================================================================
+2025-10-24 18:41:54,088 - app - INFO - ======================================================================
+2025-10-24 18:41:54,088 - app - INFO - Telecom Synthetic Data Generator Web UI Started
+2025-10-24 18:41:54,088 - app - INFO - Configuration: development
+2025-10-24 18:41:54,088 - app - INFO - Debug mode: True
+2025-10-24 18:41:54,088 - app - INFO - ======================================================================
+2025-10-24 18:41:55,015 - app - INFO - ======================================================================
+2025-10-24 18:41:55,015 - app - INFO - Telecom Synthetic Data Generator Web UI Started
+2025-10-24 18:41:55,015 - app - INFO - Configuration: development
+2025-10-24 18:41:55,015 - app - INFO - Debug mode: True
+2025-10-24 18:41:55,015 - app - INFO - ======================================================================
+2025-10-30 09:02:16,128 - app - INFO - ======================================================================
+2025-10-30 09:02:16,128 - app - INFO - Telecom Synthetic Data Generator Web UI Started
+2025-10-30 09:02:16,128 - app - INFO - Configuration: development
+2025-10-30 09:02:16,128 - app - INFO - Debug mode: True
+2025-10-30 09:02:16,141 - app - INFO - ======================================================================
+2025-10-30 09:02:17,468 - app - INFO - ======================================================================
+2025-10-30 09:02:17,468 - app - INFO - Telecom Synthetic Data Generator Web UI Started
+2025-10-30 09:02:17,468 - app - INFO - Configuration: development
+2025-10-30 09:02:17,468 - app - INFO - Debug mode: True
+2025-10-30 09:02:17,468 - app - INFO - ======================================================================
+2025-10-30 09:31:21,080 - app - INFO - ======================================================================
+2025-10-30 09:31:21,087 - app - INFO - Telecom Synthetic Data Generator Web UI Started
+2025-10-30 09:31:21,089 - app - INFO - Configuration: development
+2025-10-30 09:31:21,093 - app - INFO - Debug mode: True
+2025-10-30 09:31:21,096 - app - INFO - ======================================================================
+2025-10-30 09:31:23,988 - app - INFO - ======================================================================
+2025-10-30 09:31:23,992 - app - INFO - Telecom Synthetic Data Generator Web UI Started
+2025-10-30 09:31:23,994 - app - INFO - Configuration: development
+2025-10-30 09:31:23,996 - app - INFO - Debug mode: True
+2025-10-30 09:31:23,997 - app - INFO - ======================================================================
+2025-10-30 09:35:44,041 - app - INFO - ======================================================================
+2025-10-30 09:35:44,041 - app - INFO - Telecom Synthetic Data Generator Web UI Started
+2025-10-30 09:35:44,041 - app - INFO - Configuration: development
+2025-10-30 09:35:44,041 - app - INFO - Debug mode: True
+2025-10-30 09:35:44,041 - app - INFO - ======================================================================
+2025-10-30 09:35:46,363 - app - INFO - ======================================================================
+2025-10-30 09:35:46,364 - app - INFO - Telecom Synthetic Data Generator Web UI Started
+2025-10-30 09:35:46,364 - app - INFO - Configuration: development
+2025-10-30 09:35:46,364 - app - INFO - Debug mode: True
+2025-10-30 09:35:46,364 - app - INFO - ======================================================================
+2025-10-30 09:38:21,821 - app - INFO - ======================================================================
+2025-10-30 09:38:21,837 - app - INFO - Telecom Synthetic Data Generator Web UI Started
+2025-10-30 09:38:21,837 - app - INFO - Configuration: development
+2025-10-30 09:38:21,837 - app - INFO - Debug mode: True
+2025-10-30 09:38:21,837 - app - INFO - ======================================================================
+2025-10-30 09:38:24,599 - app - INFO - ======================================================================
+2025-10-30 09:38:24,599 - app - INFO - Telecom Synthetic Data Generator Web UI Started
+2025-10-30 09:38:24,599 - app - INFO - Configuration: development
+2025-10-30 09:38:24,599 - app - INFO - Debug mode: True
+2025-10-30 09:38:24,599 - app - INFO - ======================================================================
+2025-10-30 09:40:43,887 - app - INFO - ======================================================================
+2025-10-30 09:40:43,890 - app - INFO - Telecom Synthetic Data Generator Web UI Started
+2025-10-30 09:40:43,892 - app - INFO - Configuration: development
+2025-10-30 09:40:43,896 - app - INFO - Debug mode: True
+2025-10-30 09:40:43,896 - app - INFO - ======================================================================
+2025-10-30 09:40:46,409 - app - INFO - ======================================================================
+2025-10-30 09:40:46,409 - app - INFO - Telecom Synthetic Data Generator Web UI Started
+2025-10-30 09:40:46,409 - app - INFO - Configuration: development
+2025-10-30 09:40:46,409 - app - INFO - Debug mode: True
+2025-10-30 09:40:46,416 - app - INFO - ======================================================================
+2025-10-30 09:43:28,963 - app - INFO - ======================================================================
+2025-10-30 09:43:28,963 - app - INFO - Telecom Synthetic Data Generator Web UI Started
+2025-10-30 09:43:28,963 - app - INFO - Configuration: development
+2025-10-30 09:43:28,963 - app - INFO - Debug mode: True
+2025-10-30 09:43:28,963 - app - INFO - ======================================================================
+2025-10-30 09:43:31,349 - app - INFO - ======================================================================
+2025-10-30 09:43:31,354 - app - INFO - Telecom Synthetic Data Generator Web UI Started
+2025-10-30 09:43:31,354 - app - INFO - Configuration: development
+2025-10-30 09:43:31,357 - app - INFO - Debug mode: True
+2025-10-30 09:43:31,357 - app - INFO - ======================================================================
+2025-10-30 09:46:22,862 - app - INFO - ======================================================================
+2025-10-30 09:46:22,862 - app - INFO - Telecom Synthetic Data Generator Web UI Started
+2025-10-30 09:46:22,862 - app - INFO - Configuration: development
+2025-10-30 09:46:22,862 - app - INFO - Debug mode: True
+2025-10-30 09:46:22,862 - app - INFO - ======================================================================
+2025-10-30 09:46:25,635 - app - INFO - ======================================================================
+2025-10-30 09:46:25,635 - app - INFO - Telecom Synthetic Data Generator Web UI Started
+2025-10-30 09:46:25,642 - app - INFO - Configuration: development
+2025-10-30 09:46:25,644 - app - INFO - Debug mode: True
+2025-10-30 09:46:25,646 - app - INFO - ======================================================================
+2025-10-30 10:03:33,876 - app - INFO - ======================================================================
+2025-10-30 10:03:33,876 - app - INFO - Telecom Synthetic Data Generator Web UI Started
+2025-10-30 10:03:33,880 - app - INFO - Configuration: development
+2025-10-30 10:03:33,883 - app - INFO - Debug mode: True
+2025-10-30 10:03:33,887 - app - INFO - ======================================================================
+2025-10-30 10:03:36,633 - app - INFO - ======================================================================
+2025-10-30 10:03:36,633 - app - INFO - Telecom Synthetic Data Generator Web UI Started
+2025-10-30 10:03:36,633 - app - INFO - Configuration: development
+2025-10-30 10:03:36,633 - app - INFO - Debug mode: True
+2025-10-30 10:03:36,644 - app - INFO - ======================================================================
+2025-10-30 10:07:38,043 - app - INFO - ======================================================================
+2025-10-30 10:07:38,059 - app - INFO - Telecom Synthetic Data Generator Web UI Started
+2025-10-30 10:07:38,059 - app - INFO - Configuration: development
+2025-10-30 10:07:38,059 - app - INFO - Debug mode: True
+2025-10-30 10:07:38,059 - app - INFO - ======================================================================
+2025-10-30 10:07:40,261 - app - INFO - ======================================================================
+2025-10-30 10:07:40,261 - app - INFO - Telecom Synthetic Data Generator Web UI Started
+2025-10-30 10:07:40,261 - app - INFO - Configuration: development
+2025-10-30 10:07:40,268 - app - INFO - Debug mode: True
+2025-10-30 10:07:40,268 - app - INFO - ======================================================================
+2025-10-30 10:08:20,299 - app - INFO - ======================================================================
+2025-10-30 10:08:20,299 - app - INFO - Telecom Synthetic Data Generator Web UI Started
+2025-10-30 10:08:20,299 - app - INFO - Configuration: development
+2025-10-30 10:08:20,299 - app - INFO - Debug mode: True
+2025-10-30 10:08:20,314 - app - INFO - ======================================================================
+2025-10-30 10:08:22,945 - app - INFO - ======================================================================
+2025-10-30 10:08:22,945 - app - INFO - Telecom Synthetic Data Generator Web UI Started
+2025-10-30 10:08:22,945 - app - INFO - Configuration: development
+2025-10-30 10:08:22,945 - app - INFO - Debug mode: True
+2025-10-30 10:08:22,945 - app - INFO - ======================================================================
+2025-10-30 10:13:19,448 - app - INFO - ======================================================================
+2025-10-30 10:13:19,448 - app - INFO - Telecom Synthetic Data Generator Web UI Started
+2025-10-30 10:13:19,448 - app - INFO - Configuration: development
+2025-10-30 10:13:19,448 - app - INFO - Debug mode: True
+2025-10-30 10:13:19,448 - app - INFO - ======================================================================
+2025-10-30 10:13:21,812 - app - INFO - ======================================================================
+2025-10-30 10:13:21,814 - app - INFO - Telecom Synthetic Data Generator Web UI Started
+2025-10-30 10:13:21,816 - app - INFO - Configuration: development
+2025-10-30 10:13:21,816 - app - INFO - Debug mode: True
+2025-10-30 10:13:21,816 - app - INFO - ======================================================================
+2025-10-30 11:28:42,060 - app - INFO - ======================================================================
+2025-10-30 11:28:42,060 - app - INFO - Telecom Synthetic Data Generator Web UI Started
+2025-10-30 11:28:42,060 - app - INFO - Configuration: development
+2025-10-30 11:28:42,060 - app - INFO - Debug mode: True
+2025-10-30 11:28:42,060 - app - INFO - ======================================================================
+2025-10-30 11:28:43,449 - app - INFO - ======================================================================
+2025-10-30 11:28:43,449 - app - INFO - Telecom Synthetic Data Generator Web UI Started
+2025-10-30 11:28:43,450 - app - INFO - Configuration: development
+2025-10-30 11:28:43,451 - app - INFO - Debug mode: True
+2025-10-30 11:28:43,452 - app - INFO - ======================================================================
+2025-10-30 11:38:41,482 - app - INFO - ======================================================================
+2025-10-30 11:38:41,483 - app - INFO - Telecom Synthetic Data Generator Web UI Started
+2025-10-30 11:38:41,483 - app - INFO - Configuration: development
+2025-10-30 11:38:41,484 - app - INFO - Debug mode: True
+2025-10-30 11:38:41,484 - app - INFO - ======================================================================
+2025-10-30 11:39:13,763 - app - INFO - ======================================================================
+2025-10-30 11:39:13,764 - app - INFO - Telecom Synthetic Data Generator Web UI Started
+2025-10-30 11:39:13,765 - app - INFO - Configuration: development
+2025-10-30 11:39:13,765 - app - INFO - Debug mode: True
+2025-10-30 11:39:13,765 - app - INFO - ======================================================================
+2025-10-30 11:39:14,720 - app - INFO - ======================================================================
+2025-10-30 11:39:14,721 - app - INFO - Telecom Synthetic Data Generator Web UI Started
+2025-10-30 11:39:14,721 - app - INFO - Configuration: development
+2025-10-30 11:39:14,722 - app - INFO - Debug mode: True
+2025-10-30 11:39:14,722 - app - INFO - ======================================================================

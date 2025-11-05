@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generic Synthetic Data Generator</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="/static/style.css" rel="stylesheet">
+</head>
+<body>
+    <div class="main-container">
+        <!-- Header -->
+        <div class="header">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1><i class="bi bi-database-fill-gear"></i> Generic Synthetic Data Generator</h1>
+                    <p class="subtitle">Multi-Domain Time-Series Data Generation Platform • Version 2.0</p>
+                </div>
+                <div class="d-flex gap-2">
+                    <button class="btn btn-light" onclick="window.location.href='/about'">
+                        <i class="bi bi-info-circle"></i> About
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Domain Selection -->
+        <div class="glass-card">
+            <div class="card-header">
+                <span><i class="bi bi-grid-3x3-gap"></i> Domain Selection</span>
+                <span class="step-badge">Step 1</span>
+            </div>
+            <div class="card-body">
+                <div class="row g-3 mb-3">
+                    <div class="col-md-3" onclick="selectDomain('telecom')">
+                        <div class="domain-card glass-card p-3" id="domain-telecom">
+                            <div class="text-center">
+                                <i class="bi bi-broadcast icon-lg text-primary mb-2"></i>
+                                <h6>Telecommunications</h6>
+                                <small class="text-muted">Network KPIs, Call Data</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3" onclick="selectDomain('finance')">
+                        <div class="domain-card glass-card p-3" id="domain-finance">
+                            <div class="text-center">
+                                <i class="bi bi-currency-dollar icon-lg text-success mb-2"></i>
+                                <h6>Financial Services</h6>
+                                <small class="text-muted">Trading, Transactions</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3" onclick="selectDomain('healthcare')">
+                        <div class="domain-card glass-card p-3" id="domain-healthcare">
+                            <div class="text-center">
+                                <i class="bi bi-heart-pulse icon-lg text-danger mb-2"></i>
+                                <h6>Healthcare</h6>
+                                <small class="text-muted">Patient Data, Operations</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3" onclick="selectDomain('manufacturing')">
+                        <div class="domain-card glass-card p-3" id="domain-manufacturing">
+                            <div class="text-center">
+                                <i class="bi bi-gear-fill icon-lg text-warning mb-2"></i>
+                                <h6>Manufacturing</h6>
+                                <small class="text-muted">Production, Quality</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row g-3">
+                    <div class="col-md-3" onclick="selectDomain('ecommerce')">
+                        <div class="domain-card glass-card p-3" id="domain-ecommerce">
+                            <div class="text-center">
+                                <i class="bi bi-cart-fill icon-lg text-info mb-2"></i>
+                                <h6>E-commerce</h6>
+                                <small class="text-muted">Web Analytics, Sales</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3" onclick="selectDomain('iot')">
+                        <div class="domain-card glass-card p-3" id="domain-iot">
+                            <div class="text-center">
+                                <i class="bi bi-thermometer-half icon-lg text-secondary mb-2"></i>
+                                <h6>IoT/Sensors</h6>
+                                <small class="text-muted">Environmental Data</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3" onclick="selectDomain('custom')">
+                        <div class="domain-card glass-card p-3" id="domain-custom">
+                            <div class="text-center">
+                                <i class="bi bi-plus-circle icon-lg text-dark mb-2"></i>
+                                <h6>Custom</h6>
+                                <small class="text-muted">Build Your Own</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <button class="btn btn-fancy w-100 h-100" onclick="loadSelectedTemplate()">
+                            <i class="bi bi-download"></i> Load Full Template
+                        </button>
+                    </div>
+                </div>
+
+                <div id="templateInfo" class="alert alert-info alert-fancy mt-3" style="display:none;">
+                    <h6 id="templateTitle"></h6>
+                    <p id="templateDesc" class="mb-2"></p>
+                </div>
+
+                <!-- Quick Presets Section -->
+                <div id="presetsSection" class="mt-4" style="display:none;">
+                    <div class="glass-card p-3">
+                        <h6 class="mb-3">
+                            <i class="bi bi-lightning-charge-fill"></i> Quick Presets
+                            <span class="badge bg-warning text-dark ms-2">Fast Start</span>
+                        </h6>
+                        <div id="presetsList" class="row g-2"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Time Window -->
+        <div class="glass-card">
+            <div class="card-header">
+                <span><i class="bi bi-clock-history"></i> Time Window Configuration</span>
+                <span class="step-badge">Step 2</span>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-3">
+                        <label class="form-label"><i class="bi bi-calendar-event"></i> Start Date</label>
+                        <input type="datetime-local" id="startDate" class="form-control">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label"><i class="bi bi-calendar-check"></i> End Date</label>
+                        <input type="datetime-local" id="endDate" class="form-control">
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label"><i class="bi bi-speedometer"></i> Granularity</label>
+                        <select id="granularity" class="form-select">
+                            <option value="1">1 minute</option>
+                            <option value="5" selected>5 minutes</option>
+                            <option value="15">15 minutes</option>
+                            <option value="30">30 minutes</option>
+                            <option value="60">1 hour</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label"><i class="bi bi-shuffle"></i> Seed</label>
+                        <input type="number" id="seed" class="form-control" placeholder="Optional">
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">Duration</label>
+                        <input type="text" id="duration" class="form-control" readonly>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Entities -->
+        <div class="glass-card">
+            <div class="card-header">
+                <span><i class="bi bi-server"></i> Entities <span id="entityCount" class="badge-fancy">0</span></span>
+                <button class="btn btn-light btn-sm" onclick="addEntity()">
+                    <i class="bi bi-plus-circle"></i> Add Entity
+                </button>
+            </div>
+            <div class="card-body">
+                <div id="entitiesList"></div>
+            </div>
+        </div>
+
+        <!-- Metrics -->
+        <div class="glass-card">
+            <div class="card-header">
+                <span><i class="bi bi-graph-up"></i> Metrics <span id="metricCount" class="badge-fancy">0</span></span>
+                <button class="btn btn-light btn-sm" onclick="addMetric()">
+                    <i class="bi bi-plus-circle"></i> Add Metric
+                </button>
+            </div>
+            <div class="card-body">
+                <div id="metricsList"></div>
+            </div>
+        </div>
+
+        <!-- Advanced Settings -->
+        <div class="glass-card">
+            <div class="card-header" style="cursor: pointer;" onclick="toggleAdvanced()">
+                <span><i class="bi bi-sliders"></i> Advanced Settings (Optional)</span>
+                <i id="advancedIcon" class="bi bi-chevron-down"></i>
+            </div>
+            <div id="advancedSettings" style="display:none;">
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="enableSeasonality">
+                                <label class="form-check-label" for="enableSeasonality">
+                                    <i class="bi bi-arrow-repeat"></i> Enable Seasonality
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="enableArima">
+                                <label class="form-check-label" for="enableArima">
+                                    <i class="bi bi-bezier2"></i> Enable ARIMA Smoothing
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Output Format</label>
+                            <select id="outputFormat" class="form-select">
+                                <option value="csv">CSV</option>
+                                <option value="parquet" selected>Parquet</option>
+                                <option value="json">JSON</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="glass-card">
+            <div class="card-body">
+                <div class="d-flex gap-3 justify-content-center flex-wrap">
+                    <button class="btn btn-fancy btn-lg" onclick="validateConfig()">
+                        <i class="bi bi-check-circle"></i> Validate Configuration
+                    </button>
+                    <button class="btn btn-success-fancy btn-lg" onclick="generateData()">
+                        <i class="bi bi-play-circle-fill"></i> Generate Data
+                    </button>
+                    <button class="btn btn-fancy btn-lg" onclick="exportConfig()">
+                        <i class="bi bi-download"></i> Export Config
+                    </button>
+                    <button class="btn btn-danger-fancy btn-lg" onclick="clearAll()">
+                        <i class="bi bi-trash"></i> Clear All
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Status Messages -->
+        <div id="statusContainer"></div>
+
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay" style="display:none;">
+        <div class="loading-content">
+            <div class="spinner-custom mx-auto"></div>
+            <h4 class="mt-3">Generating Data...</h4>
+            <p>Please wait while we create your synthetic dataset</p>
+        </div>
+    </div>
+
+    <!-- Templates -->
+    <template id="entityTemplate">
+        <div class="entity-item">
+            <div class="row g-2 align-items-center">
+                <div class="col-md-3">
+                    <input type="text" class="form-control entity-id" placeholder="Entity ID (e.g., SERVER-01)">
+                </div>
+                <div class="col-md-3">
+                    <input type="text" class="form-control entity-type" placeholder="Type">
+                </div>
+                <div class="col-md-2">
+                    <input type="number" class="form-control entity-capacity" placeholder="Capacity">
+                </div>
+                <div class="col-md-3">
+                    <input type="text" class="form-control entity-metadata" placeholder='Metadata {"key": "value"}'>
+                </div>
+                <div class="col-md-1">
+                    <button class="btn btn-danger w-100" onclick="removeEntity(this)">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <template id="metricTemplate">
+        <div class="metric-item">
+            <div class="row g-2">
+                <div class="col-md-2">
+                    <select class="form-select metric-entity">
+                        <option value="">Select Entity</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <input type="text" class="form-control metric-name" placeholder="Metric Name">
+                </div>
+                <div class="col-md-2">
+                    <input type="text" class="form-control metric-display" placeholder="Display Name">
+                </div>
+                <div class="col-md-1">
+                    <select class="form-select metric-distribution">
+                        <option value="normal">Normal</option>
+                        <option value="gamma">Gamma</option>
+                        <option value="lognormal">Lognormal</option>
+                        <option value="beta">Beta</option>
+                        <option value="poisson">Poisson</option>
+                    </select>
+                </div>
+                <div class="col-md-1">
+                    <input type="number" class="form-control metric-mean" placeholder="Mean" step="0.01">
+                </div>
+                <div class="col-md-1">
+                    <input type="number" class="form-control metric-std" placeholder="Std" step="0.01">
+                </div>
+                <div class="col-md-1">
+                    <input type="text" class="form-control metric-unit" placeholder="Unit">
+                </div>
+                <div class="col-md-1">
+                    <input type="text" class="form-control metric-category" placeholder="Category">
+                </div>
+                <div class="col-md-1">
+                    <button class="btn btn-danger w-100" onclick="removeMetric(this)">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/static/app_with_presets.js"></script>
+</body>
+</html>
