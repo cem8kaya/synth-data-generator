@@ -252,6 +252,29 @@ body {
     animation: fadeIn 0.3s ease-out;
 }
 
+/* Results Content (Persistent - Not auto-removed) */
+.results-content-success {
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(5, 150, 105, 0.05) 100%);
+    border: 2px solid rgba(16, 185, 129, 0.3);
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.15);
+    animation: fadeIn 0.3s ease-out;
+}
+
+.results-content-success h5 {
+    color: #059669;
+    font-weight: 700;
+    margin-bottom: 15px;
+}
+
+/* Chart Legend Enhancements */
+.glass-card canvas {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    padding: 10px;
+}
+
 /* Icons */
 .icon-lg {
     font-size: 1.5rem;
