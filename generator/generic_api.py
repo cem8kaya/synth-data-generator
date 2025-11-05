@@ -7,6 +7,7 @@ Domain-agnostic REST API with template support
 from flask import Blueprint, request, jsonify, send_file
 from pathlib import Path
 import pandas as pd
+import numpy as np
 from datetime import datetime
 import json
 import traceback
@@ -121,9 +122,18 @@ def generate_data():
             with open(metadata_file, 'w') as f:
                 json.dump(metadata, f, indent=2)
         
-        # Generate preview
+        # Generate preview (first 10 rows)
         preview_data = df.head(10).to_dict('records')
-        
+
+        # Generate time-series sample for visualizations (evenly distributed sample)
+        sample_size = min(100, len(df))  # Sample up to 100 points
+        if len(df) > sample_size:
+            # Evenly distributed sample across the time range
+            indices = np.linspace(0, len(df) - 1, sample_size, dtype=int)
+            timeseries_data = df.iloc[indices].to_dict('records')
+        else:
+            timeseries_data = df.to_dict('records')
+
         # Basic statistics
         stats = {}
         for col in df.columns:
@@ -135,12 +145,30 @@ def generate_data():
                     'max': float(df[col].max()),
                     'median': float(df[col].median())
                 }
+
+        # Extract entity and metric information for better visualization
+        metrics_info = []
+        for entity in config.entities:
+            for metric in entity.metrics:
+                column_name = f"{entity.entity_id}_{metric.name}"
+                if column_name in df.columns:
+                    metrics_info.append({
+                        'column': column_name,
+                        'entity_id': entity.entity_id,
+                        'entity_type': entity.entity_type,
+                        'metric_name': metric.name,
+                        'display_name': metric.display_name or metric.name,
+                        'unit': metric.unit or '',
+                        'category': metric.category or 'general'
+                    })
         
         return jsonify({
             'success': True,
             'metadata': metadata,
             'preview': preview_data,
+            'timeseries': timeseries_data,
             'statistics': stats,
+            'metrics_info': metrics_info,
             'download_url': f'/api/download/{filename}'
         })
         
